@@ -1,3 +1,6 @@
+'''
+Credit: code copied from https://github.com/mrzhu-cool/pix2pix-pytorch/blob/master/models.py
+'''
 import torch.nn as nn
 import torch
 
