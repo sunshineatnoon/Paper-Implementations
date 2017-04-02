@@ -9,4 +9,5 @@ Use PyTorch to implement some classic frameworks
 - ResNet18
 
 **[Generative Models](https://github.com/sunshineatnoon/PyTorchExercise/tree/master/dcgan)**
-- DCGAN
+- [DCGAN](https://github.com/sunshineatnoon/PyTorchExercise/tree/master/dcgan)
+- [pix2pix](https://github.com/sunshineatnoon/PyTorchExercise/tree/master/pix2pix)
