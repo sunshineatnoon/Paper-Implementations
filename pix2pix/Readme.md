@@ -20,9 +20,13 @@ PyTorch implementation of [Image-to-Image Translation Using Conditional Adversar
 
 ## Generate
   ```
-  python generate.py --netG checkpoints/netG.pth --cuda
+  python generate.py --netG checkpoints/netG.pth --cuda --which_direction AtoB
   ```
+- From A to B:
 ![A](samples/A.png "A") ![CIFAR](samples/fakeB.png "B")
+
+- From B to A:
+![A](samples/A2B_A.png "A") ![CIFAR](samples/A2B_fakeB.png "B")
 
 **The image generated is not as good as the official torch implementation, I will continue to address this issue.**
 
