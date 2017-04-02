@@ -1,6 +1,6 @@
 # PyTorch Implementation of pix2pix
 
-PyTorch implementation of [Image-to-Image Translation Using Conditional Adversarial Networks](https://arxiv.org/pdf/1611.07004v1.pdf).
+PyTorch implementation of [Image-to-Image Translation Using Conditional Adversarial Networks](https://arxiv.org/pdf/1611.07004v1.pdf) on the Facades dataset.
 
 ## Prerequisites
 - PyTorch
@@ -19,7 +19,6 @@ PyTorch implementation of [Image-to-Image Translation Using Conditional Adversar
   ```
 
 ## Generate
-- Generate MNIST
   ```
   python generate.py --netG checkpoints/netG.pth --cuda
   ```
