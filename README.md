@@ -8,6 +8,6 @@ Use PyTorch to implement some classic frameworks
 - Network in Network
 - ResNet18
 
-**[Generative Models](https://github.com/sunshineatnoon/PyTorchExercise/tree/master/dcgan)**
+**Generative Models**
 - [DCGAN](https://github.com/sunshineatnoon/PyTorchExercise/tree/master/dcgan)
 - [pix2pix](https://github.com/sunshineatnoon/PyTorchExercise/tree/master/pix2pix)
