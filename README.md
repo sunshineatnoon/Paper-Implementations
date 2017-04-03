@@ -1,4 +1,4 @@
-# PyTorchExercise
+# PyTorchExamples
 Use PyTorch to implement some classic frameworks
 
 ## Implemented
