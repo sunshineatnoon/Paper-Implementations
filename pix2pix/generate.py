@@ -13,20 +13,21 @@ from torch.autograd import Variable
 from model.Generator import Generator
 from utils.dataset import Facades
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--batchSize', type=int, default=6, help='input batch size')
+parser = argparse.ArgumentParser(description='test pix2pix model')
+parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
 parser.add_argument('--cuda', action='store_true', help='enables cuda')
 parser.add_argument('--netG', default='', help="path to netG (to continue training)")
 parser.add_argument('--manualSeed', type=int, help='manual seed')
-parser.add_argument('--loadSize', type=int, default=286, help='scale image to this size')
+parser.add_argument('--loadSize', type=int, default=256, help='scale image to this size')
 parser.add_argument('--fineSize', type=int, default=256, help='random crop image to this size')
 parser.add_argument('--input_nc', type=int, default=3, help='channel number of input image')
 parser.add_argument('--output_nc', type=int, default=3, help='channel number of output image')
 parser.add_argument('--flip', type=int, default=0, help='1 for flipping image randomly, 0 for not')
-parser.add_argument('--dataPath', default='facades/train/', help='path to training images')
+parser.add_argument('--dataPath', default='facades/test/', help='path to training images')
 parser.add_argument('--which_direction', default='AtoB', help='AtoB or BtoA')
 parser.add_argument('--outf', default='samples/', help='folder to output images and model checkpoints')
 parser.add_argument('--ngf', type=int, default=64)
+parser.add_argument('--imgNum', type=int, default=32, help='How many images to generate?')
 
 opt = parser.parse_args()
 print(opt)
@@ -56,8 +57,14 @@ train_loader = torch.utils.data.DataLoader(dataset=facades,
                                            batch_size=opt.batchSize,
                                            shuffle=True,
                                            num_workers=2)
+fakeB = torch.FloatTensor(opt.imgNum, opt.output_nc, opt.fineSize, opt.fineSize)
+A = torch.FloatTensor(opt.imgNum, opt.output_nc, opt.fineSize, opt.fineSize)
+realB = torch.FloatTensor(opt.imgNum, opt.output_nc, opt.fineSize, opt.fineSize)
+
 if(opt.cuda):
     netG.cuda()
+    fakeB = fakeB.cuda()
+    A = A.cuda()
 
 for i, image in enumerate(train_loader):
     if(opt.which_direction == 'AtoB'):
@@ -71,13 +78,22 @@ for i, image in enumerate(train_loader):
         imgA = imgA.cuda()
     fake = netG(imgA)
 
-    vutils.save_image(fake.data,
-                '%s/fakeB.png' % (opt.outf),
-                normalize=True)
-    vutils.save_image(imgA.data,
-                '%s/A.png' % (opt.outf),
-                normalize=True)
-    vutils.save_image(imgB,
-                '%s/realB.png' % (opt.outf),
-                normalize=True)
-    break
+    fakeB[i,:,:,:] = fake.data
+    A[i,:,:,:] = imgA.data
+    realB[i,:,:,:] = imgB
+
+    if(i+1 >= opt.imgNum):
+        break
+
+vutils.save_image(fakeB,
+            '%s/fakeB.png' % (opt.outf),
+            normalize=True,
+            scale_each=True)
+vutils.save_image(A,
+            '%s/A.png' % (opt.outf),
+            normalize=True,
+            scale_each=True)
+vutils.save_image(realB,
+            '%s/realB.png' % (opt.outf),
+            normalize=True,
+            scale_each=True)

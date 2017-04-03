@@ -16,8 +16,8 @@ from model.Discriminator import Discriminator
 from model.Generator import Generator
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--batchSize', type=int, default=64, help='input batch size')
+parser = argparse.ArgumentParser(description='train pix2pix model')
+parser.add_argument('--batchSize', type=int, default=1, help='with batchSize=1 equivalent to instance normalization.')
 parser.add_argument('--ngf', type=int, default=64)
 parser.add_argument('--ndf', type=int, default=64)
 parser.add_argument('--niter', type=int, default=200, help='number of epochs to train for')
@@ -33,7 +33,7 @@ parser.add_argument('--flip', type=int, default=1, help='1 for flipping image ra
 parser.add_argument('--input_nc', type=int, default=3, help='channel number of input image')
 parser.add_argument('--output_nc', type=int, default=3, help='channel number of output image')
 parser.add_argument('--which_direction', default='AtoB', help='AtoB or BtoA')
-parser.add_argument('--lamb', default=100, help='weight on L1 term in objective')
+parser.add_argument('--lamb', type=int, default=100, help='weight on L1 term in objective')
 
 opt = parser.parse_args()
 print(opt)
@@ -66,6 +66,7 @@ def weights_init(m):
     classname = m.__class__.__name__
     if classname.find('Conv') != -1:
         m.weight.data.normal_(0.0, 0.02)
+        m.bias.data.fill_(0)
     elif classname.find('BatchNorm') != -1:
         m.weight.data.normal_(1.0, 0.02)
         m.bias.data.fill_(0)
@@ -140,12 +141,14 @@ for epoch in range(1,opt.niter+1):
 
         # train with fake
         fake_B = netG(real_A)
+        label.data.fill_(fake_label)
+
         fake_AB = torch.cat((real_A, fake_B), 1)
         output = netD(fake_AB.detach())
         errD_fake = criterion(output,label)
         errD_fake.backward()
 
-        errD = errD_fake + errD_real
+        errD = (errD_fake + errD_real)/2
         optimizerD.step()
 
         ########### fGx ###########
@@ -157,12 +160,14 @@ for epoch in range(1,opt.niter+1):
         errG = errGAN + opt.lamb*errL1
 
         errG.backward()
+
         optimizerG.step()
 
         ########### Logging ##########
-        print('[%d/%d][%d/%d] Loss_D: %.4f Loss_G: %.4f Loss_L1: %.4f'
-                  % (epoch, opt.niter, i, len(train_loader),
-                     errD.data[0], errG.data[0], errL1.data[0]))
+        if(i % 50 == 0):
+            print('[%d/%d][%d/%d] Loss_D: %.4f Loss_G: %.4f Loss_L1: %.4f'
+                      % (epoch, opt.niter, i, len(train_loader),
+                         errD.data[0], errGAN.data[0], errL1.data[0]))
 
     ########## Visualize #########
     if(epoch % 5 == 0):
