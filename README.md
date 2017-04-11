@@ -11,3 +11,6 @@ Use PyTorch to implement some classic frameworks
 **Generative Models**
 - [DCGAN](https://github.com/sunshineatnoon/PyTorchExercise/tree/master/dcgan)
 - [pix2pix](https://github.com/sunshineatnoon/PyTorchExercise/tree/master/pix2pix)
+
+**LSTM**
+-[Char RNN]()
