@@ -13,4 +13,4 @@ Use PyTorch to implement some classic frameworks
 - [pix2pix](https://github.com/sunshineatnoon/PyTorchExercise/tree/master/pix2pix)
 
 **LSTM**
--[Char RNN]()
+- [Char RNN](https://github.com/sunshineatnoon/PyTorchExamples/tree/master/char-rnn)
