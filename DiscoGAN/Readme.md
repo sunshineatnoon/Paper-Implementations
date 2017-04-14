@@ -24,6 +24,7 @@ PyTorch implementation of [Learning to Discover Cross-Domain Relations with Gene
   ```
 
 - Generations:
+
 ![A](samples/A.png "A")
 ![AB](samples/AB.png "AB")
 ![ABA](samples/ABA.png "ABA")
