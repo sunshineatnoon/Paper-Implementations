@@ -14,7 +14,7 @@ from model.Discriminator import Discriminator
 from model.Generator import Generator
 
 parser = argparse.ArgumentParser(description='train pix2pix model')
-parser.add_argument('--batchSize', type=int, default=32, help='with batchSize=1 equivalent to instance normalization.')
+parser.add_argument('--batchSize', type=int, default=30, help='with batchSize=1 equivalent to instance normalization.')
 parser.add_argument('--ngf', type=int, default=64)
 parser.add_argument('--ndf', type=int, default=64)
 parser.add_argument('--cuda', action='store_true', help='enables cuda')
@@ -105,13 +105,16 @@ def test():
 
     vutils.save_image(AB.data,
             '%s/AB.png' % (opt.outf),
-            normalize=True)
+            normalize=True,
+	    nrow=3)
     vutils.save_image(ABA.data,
             '%s/ABA.png' % (opt.outf),
-            normalize=True)
+            normalize=True,
+	    nrow=3)
     vutils.save_image(imgA,
             '%s/A.png' % (opt.outf),
-            normalize=True)
+            normalize=True,
+	    nrow=3)
 
 test()
 

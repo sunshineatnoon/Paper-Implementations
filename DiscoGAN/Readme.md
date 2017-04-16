@@ -31,9 +31,7 @@ PyTorch implementation of [Learning to Discover Cross-Domain Relations with Gene
 
 - Generations:
 
-![A](samples/A.png "A")
-![AB](samples/AB.png "AB")
-![ABA](samples/ABA.png "ABA")
+![A](samples/A.png "A") ![AB](samples/AB.png "AB") ![ABA](samples/ABA.png "ABA")
 
 ## Reference
 1. [https://github.com/carpedm20/DiscoGAN-pytorch](https://github.com/carpedm20/DiscoGAN-pytorch)
