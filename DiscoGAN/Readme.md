@@ -10,24 +10,27 @@ PyTorch implementation of [Learning to Discover Cross-Domain Relations with Gene
 
   In the `DiscoGAN` folder, run:
   ```
-  wget https://people.eecs.berkeley.edu/~tinghuiz/projects/pix2pix/datasets/facades.tar.gz
-  tar -zxvf facades.tar.gz
+  wget https://people.eecs.berkeley.edu/~tinghuiz/projects/pix2pix/datasets/edges2shoes.tar.gz
+  tar -zxvf edges2shoes.tar.gz
+  rm edges2shoes.tar.gz
   ```
-  Go to scripts folder, run:
+  Go to the `scripts` folder and run:
   ```
-  python PrepareDataset.py --dataPath ../facades
+  python PrepareDataset.py --dataPath ../edges2shoes
   ```
+
   This script will split paired training image into unpaired training images. At the end of this script, it will ask you whether to delete original paired data in order to save disk space, please be aware that deleted data is unrecoverable.
   
 ## Training
   ```
-  python DiscoGAN.py --cuda
+  python DiscoGAN.py --cuda --niter 20000 --dataPath edges2shoes/train
   ```
 
 ## Generate
   ```
-  python generate.py --G_AB checkpoints/G_AB_2000.pth --G_BA checkpoints/G_BA_2000.pth -cuda
+  python generate.py --G_AB checkpoints/G_AB_2000.pth --G_BA checkpoints/G_BA_2000.pth -cuda --dataPath edges2shoes/val/
   ```
+To train or generate on other dataset, change `dataPath` accordingly.
 
 - Generations:
 
