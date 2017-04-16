@@ -45,11 +45,11 @@ def ToTensor(pic):
 
 
 # You should build custom dataset as below.
-class Facades(data.Dataset):
-    def __init__(self,dataPath='facades/train',loadSize=286,fineSize=256,flip=1):
-        super(Facades, self).__init__()
+class DATASET(data.Dataset):
+    def __init__(self,dataPath='',loadSize=72,fineSize=64,flip=1):
+        super(DATASET, self).__init__()
         # list all images into a list
-        self.image_list = [x for x in listdir(dataPath) if is_image_file(x)]
+        self.list = [x for x in listdir(dataPath) if is_image_file(x)]
         self.dataPath = dataPath
         self.loadSize = loadSize
         self.fineSize = fineSize
@@ -57,38 +57,30 @@ class Facades(data.Dataset):
 
     def __getitem__(self, index):
         # 1. Read one data from file (e.g. using numpy.fromfile, PIL.Image.open).
-        path = os.path.join(self.dataPath,self.image_list[index])
-        img = default_loader(path) # 512x256
-        #img = ToTensor(img) # 3 x 256 x 512
+        path = os.path.join(self.dataPath,self.list[index])
+        img = default_loader(path) # 256x256
 
         # 2. seperate image A and B; Scale; Random Crop; to Tensor
         w,h = img.size
-        imgA = img.crop((0, 0, w/2, h))
-        imgB = img.crop((w/2, 0, w, h))
 
         if(h != self.loadSize):
-            imgA = imgA.resize((self.loadSize, self.loadSize), Image.BILINEAR)
-            imgB = imgB.resize((self.loadSize, self.loadSize), Image.BILINEAR)
+            img = img.resize((self.loadSize, self.loadSize), Image.BILINEAR)
 
         if(self.loadSize != self.fineSize):
             x1 = random.randint(0, self.loadSize - self.fineSize)
             y1 = random.randint(0, self.loadSize - self.fineSize)
-            imgA = imgA.crop((x1, y1, x1 + self.fineSize, y1 + self.fineSize))
-            imgB = imgB.crop((x1, y1, x1 + self.fineSize, y1 + self.fineSize))
+            img = img.crop((x1, y1, x1 + self.fineSize, y1 + self.fineSize))
 
         if(self.flip == 1):
             if random.random() < 0.5:
-                imgA = imgA.transpose(Image.FLIP_LEFT_RIGHT)
-                imgB = imgB.transpose(Image.FLIP_LEFT_RIGHT)
+                img = img.transpose(Image.FLIP_LEFT_RIGHT)
 
-        imgA = ToTensor(imgA) # 3 x 256 x 256
-        imgB = ToTensor(imgB) # 3 x 256 x 256
+        img = ToTensor(img) # 3 x 256 x 256
 
-        imgA = imgA.mul_(2).add_(-1)
-        imgB = imgB.mul_(2).add_(-1)
+        img = img.mul_(2).add_(-1)
         # 3. Return a data pair (e.g. image and label).
-        return imgA, imgB
+        return img
 
     def __len__(self):
         # You should change 0 to the total size of your dataset.
-        return len(self.image_list)
+        return len(self.list)

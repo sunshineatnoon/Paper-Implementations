@@ -13,6 +13,12 @@ PyTorch implementation of [Learning to Discover Cross-Domain Relations with Gene
   wget https://people.eecs.berkeley.edu/~tinghuiz/projects/pix2pix/datasets/facades.tar.gz
   tar -zxvf facades.tar.gz
   ```
+  Go to scripts folder, run:
+  ```
+  python PrepareDataset.py --dataPath ../facades
+  ```
+  This script will split paired training image into unpaired training images. At the end of this script, it will ask you whether to delete original paired data in order to save disk space, please be aware that deleted data is unrecoverable.
+  
 ## Training
   ```
   python DiscoGAN.py --cuda
@@ -32,4 +38,3 @@ PyTorch implementation of [Learning to Discover Cross-Domain Relations with Gene
 ## Reference
 1. [https://github.com/carpedm20/DiscoGAN-pytorch](https://github.com/carpedm20/DiscoGAN-pytorch)
 2. Kim T, Cha M, Kim H, et al. Learning to Discover Cross-Domain Relations with Generative Adversarial Networks[J]. arXiv preprint arXiv:1703.05192, 2017.
-
