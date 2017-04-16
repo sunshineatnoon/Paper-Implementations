@@ -47,8 +47,8 @@ if opt.cuda:
 
 cudnn.benchmark = True
 ##########   DATASET   ###########
-datasetA = DATASET(os.path.join(opt.dataPath,'A'),opt.loadSize,opt.fineSize,opt.flip)
-datasetB = DATASET(os.path.join(opt.dataPath,'B'),opt.loadSize,opt.fineSize,opt.flip)
+datasetA = DATASET(os.path.join(opt.dataPath,'B'),opt.loadSize,opt.fineSize,opt.flip)
+datasetB = DATASET(os.path.join(opt.dataPath,'A'),opt.loadSize,opt.fineSize,opt.flip)
 loader_A = torch.utils.data.DataLoader(dataset=datasetA,
                                        batch_size=opt.batchSize,
                                        shuffle=True,
