@@ -14,7 +14,7 @@ from model.Discriminator import Discriminator
 from model.Generator import Generator
 
 parser = argparse.ArgumentParser(description='train pix2pix model')
-parser.add_argument('--batchSize', type=int, default=100, help='with batchSize=1 equivalent to instance normalization.')
+parser.add_argument('--batchSize', type=int, default=32, help='with batchSize=1 equivalent to instance normalization.')
 parser.add_argument('--ngf', type=int, default=64)
 parser.add_argument('--ndf', type=int, default=64)
 parser.add_argument('--cuda', action='store_true', help='enables cuda')
