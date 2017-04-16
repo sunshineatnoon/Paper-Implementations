@@ -9,7 +9,7 @@ import torchvision.transforms as transforms
 import torchvision.utils as vutils
 from torch.autograd import Variable
 
-from utils.dataset import Facades
+from utils.dataset import DATASET 
 from model.Discriminator import Discriminator
 from model.Generator import Generator
 
@@ -47,12 +47,18 @@ if opt.cuda:
 
 cudnn.benchmark = True
 ##########   DATASET   ###########
-facades = Facades(opt.dataPath,opt.loadSize,opt.fineSize,opt.flip)
-train_loader = torch.utils.data.DataLoader(dataset=facades,
-                                           batch_size=opt.batchSize,
-                                           shuffle=True,
-                                           num_workers=2)
-
+datasetA = DATASET(os.path.join(opt.dataPath,'A'),opt.loadSize,opt.fineSize,opt.flip)
+datasetB = DATASET(os.path.join(opt.dataPath,'B'),opt.loadSize,opt.fineSize,opt.flip)
+loader_A = torch.utils.data.DataLoader(dataset=datasetA,
+                                       batch_size=opt.batchSize,
+                                       shuffle=True,
+                                       num_workers=2)
+loaderA = iter(loader_A)
+loader_B = torch.utils.data.DataLoader(dataset=datasetB,
+                                       batch_size=opt.batchSize,
+                                       shuffle=True,
+                                       num_workers=2)
+loaderB = iter(loader_B)
 ###########   MODEL   ###########
 ndf = opt.ndf
 ngf = opt.ngf
@@ -90,25 +96,22 @@ if(opt.cuda):
 
 ###########   Testing    ###########
 def test():
-    for i, image in enumerate(train_loader):
-        imgA = image[1]
-        imgB = image[0]
-        real_A.data.copy_(imgA)
-        real_B.data.copy_(imgB)
-        AB = G_AB(real_A)
-        ABA = G_BA(AB)
+    imgA = loaderA.next() 
+    imgB = loaderB.next()
+    real_A.data.copy_(imgA)
+    real_B.data.copy_(imgB)
+    AB = G_AB(real_A)
+    ABA = G_BA(AB)
 
-        vutils.save_image(AB.data,
-                '%s/AB.png' % (opt.outf),
-                normalize=True)
-        vutils.save_image(ABA.data,
-                '%s/ABA.png' % (opt.outf),
-                normalize=True)
-        vutils.save_image(imgA,
-                '%s/A.png' % (opt.outf),
-                normalize=True)
-        break
-
+    vutils.save_image(AB.data,
+            '%s/AB.png' % (opt.outf),
+            normalize=True)
+    vutils.save_image(ABA.data,
+            '%s/ABA.png' % (opt.outf),
+            normalize=True)
+    vutils.save_image(imgA,
+            '%s/A.png' % (opt.outf),
+            normalize=True)
 
 test()
 
