@@ -47,8 +47,8 @@ if opt.cuda:
 
 cudnn.benchmark = True
 ##########   DATASET   ###########
-datasetA = DATASET(os.path.join(opt.dataPath,'B'),opt.loadSize,opt.fineSize,opt.flip)
-datasetB = DATASET(os.path.join(opt.dataPath,'A'),opt.loadSize,opt.fineSize,opt.flip)
+datasetA = DATASET(os.path.join(opt.dataPath,'A'),opt.loadSize,opt.fineSize,opt.flip)
+datasetB = DATASET(os.path.join(opt.dataPath,'B'),opt.loadSize,opt.fineSize,opt.flip)
 loader_A = torch.utils.data.DataLoader(dataset=datasetA,
                                        batch_size=opt.batchSize,
                                        shuffle=True,
@@ -100,6 +100,7 @@ def test():
     imgB = loaderB.next()
     real_A.data.copy_(imgA)
     real_B.data.copy_(imgB)
+
     AB = G_AB(real_A)
     ABA = G_BA(AB)
 
@@ -113,6 +114,22 @@ def test():
 	    nrow=4)
     vutils.save_image(imgA,
             '%s/A.png' % (opt.outf),
+            normalize=True,
+	    nrow=4)
+
+    BA = G_BA(real_B)
+    BAB = G_AB(BA)
+
+    vutils.save_image(BA.data,
+            '%s/BA.png' % (opt.outf),
+            normalize=True,
+	    nrow=4)
+    vutils.save_image(BAB.data,
+            '%s/BAB.png' % (opt.outf),
+            normalize=True,
+	    nrow=4)
+    vutils.save_image(imgB,
+            '%s/B.png' % (opt.outf),
             normalize=True,
 	    nrow=4)
 

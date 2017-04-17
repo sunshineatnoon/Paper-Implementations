@@ -55,8 +55,8 @@ if opt.cuda:
 
 cudnn.benchmark = True
 ##########   DATASET   ###########
-datasetA = DATASET(os.path.join(opt.dataPath,'B'),opt.loadSize,opt.fineSize,opt.flip)
-datasetB = DATASET(os.path.join(opt.dataPath,'A'),opt.loadSize,opt.fineSize,opt.flip)
+datasetA = DATASET(os.path.join(opt.dataPath,'A'),opt.loadSize,opt.fineSize,opt.flip)
+datasetB = DATASET(os.path.join(opt.dataPath,'B'),opt.loadSize,opt.fineSize,opt.flip)
 loader_A = torch.utils.data.DataLoader(dataset=datasetA,
                                        batch_size=opt.batchSize,
                                        shuffle=True,
@@ -140,8 +140,8 @@ def test(niter):
     loaderA, loaderB = iter(loader_A), iter(loader_B)
     imgA = loaderA.next()
     imgB = loaderB.next()
-    real_A.data.copy_(imgA)
-    real_B.data.copy_(imgB)
+    real_A.data.resize_(imgA.size()).copy_(imgA)
+    real_B.data.resize_(imgB.size()).copy_(imgB)
     AB = G_AB(real_A)
     BA = G_BA(real_B)
 
