@@ -35,7 +35,9 @@ To train or generate on other dataset, change `dataPath` accordingly.
 - Generations:
 
 ![A](samples/A.png "A") ![AB](samples/AB.png "AB") ![ABA](samples/ABA.png "ABA")
-![B](samples/A.png "B") ![AB](samples/AB.png "BA") ![ABA](samples/ABA.png "BAB")
+![B](samples/B.png "B") ![BA](samples/BA.png "BA") ![BAB](samples/BAB.png "BAB")
+
+![A](samples/facadesA.png "A") ![AB](samples/facadesAB.png "AB") ![ABA](samples/facadesABA.png "ABA")
 
 ## Reference
 1. [https://github.com/carpedm20/DiscoGAN-pytorch](https://github.com/carpedm20/DiscoGAN-pytorch)
