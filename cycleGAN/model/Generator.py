@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch
 
 # courtesy: https://github.com/darkstar112358/fast-neural-style/blob/master/neural_style/transformer_net.py
 class InstanceNormalization(torch.nn.Module):
@@ -34,11 +35,11 @@ class InstanceNormalization(torch.nn.Module):
 
 def build_conv_block(dim):
     return nn.Sequential(nn.ReflectionPad2d((1,1,1,1)),
-                         nn.Conv2d(dim,dim,3,3,1,1,0,0),
+                         nn.Conv2d(dim,dim,3,1,0),
                          InstanceNormalization(dim),
                          nn.ReLU(True),
                          nn.ReflectionPad2d((1,1,1,1)),
-                         nn.Conv2d(dim,dim,3,3,1,1,0,0),
+                         nn.Conv2d(dim,dim,3,1,0),
                          InstanceNormalization(dim))
 
 class ResidualBlock(nn.Module):
@@ -64,7 +65,7 @@ class Generator(nn.Module):
     def __init__(self, input_nc, output_nc, ngf):
         super(Generator,self).__init__()
         # 128 x 128
-        self.layer1 = nn.Sequential(nn.ReflectionPad2d(3,3,3,3),
+        self.layer1 = nn.Sequential(nn.ReflectionPad2d((3,3,3,3)),
                                     nn.Conv2d(input_nc,ngf,kernel_size=7,stride=1),
                                     InstanceNormalization(ngf),
                                     nn.ReLU(True))
@@ -89,8 +90,8 @@ class Generator(nn.Module):
                                      nn.ReLU(True))
         # 64 x 64
         self.layer6 = nn.Sequential(nn.ConvTranspose2d(ngf*2, ngf, 3, 2, 1, 1),
-                                     nn.Conv2d(ngf,output_nc,kernel_size=7,stride=1),
-                                     nn.ReLU(True))
+                                    InstanceNormalization(ngf),
+                                    nn.ReLU(True))
         # 128 x 128
         self.layer7 = nn.Sequential(nn.ReflectionPad2d((3,3,3,3)),
                                      nn.Conv2d(ngf,output_nc,kernel_size=7,stride=1),
