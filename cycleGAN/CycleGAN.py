@@ -36,6 +36,7 @@ parser.add_argument('--G_AB', default='', help='path to pre-trained G_AB')
 parser.add_argument('--G_BA', default='', help='path to pre-trained G_BA')
 parser.add_argument('--save_step', type=int, default=5000, help='save interval')
 parser.add_argument('--log_step', type=int, default=100, help='log interval')
+parser.add_argument('--loss_type', default='bce', help='GAN loss type, bce|mse default is negative likelihood loss')
 
 opt = parser.parse_args()
 print(opt)
@@ -107,7 +108,10 @@ D_B.apply(weights_init)
 
 ###########   LOSS & OPTIMIZER   ##########
 criterionMSE = nn.AbsCriterion()
-criterion = nn.BCELoss()
+if(opt.loss_type == 'bce'):
+    criterion = nn.BCELoss()
+else:
+    criterion = nn.MSELoss()
 # chain is used to update two generators simultaneously
 optimizerD = torch.optim.Adam(chain(D_A.parameters(),D_B.parameters()),lr=opt.lr, betas=(opt.beta1, 0.999), weight_decay=opt.weight_decay)
 optimizerG = torch.optim.Adam(chain(G_AB.parameters(),G_BA.parameters()),lr=opt.lr, betas=(opt.beta1, 0.999))
