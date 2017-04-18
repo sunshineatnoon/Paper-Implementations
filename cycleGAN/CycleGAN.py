@@ -16,10 +16,10 @@ from model.Discriminator import Discriminator
 from model.Generator import Generator
 
 parser = argparse.ArgumentParser(description='train pix2pix model')
-parser.add_argument('--batchSize', type=int, default=200, help='with batchSize=1 equivalent to instance normalization.')
+parser.add_argument('--batchSize', type=int, default=10, help='with batchSize=1 equivalent to instance normalization.')
 parser.add_argument('--ngf', type=int, default=64)
 parser.add_argument('--ndf', type=int, default=64)
-parser.add_argument('--niter', type=int, default=10000, help='number of iterations to train for')
+parser.add_argument('--niter', type=int, default=15000, help='number of iterations to train for')
 parser.add_argument('--lr', type=float, default=0.0002, help='learning rate, default=0.0002')
 parser.add_argument('--beta1', type=float, default=0.5, help='beta1 for adam. default=0.5')
 parser.add_argument('--weight_decay', type=float, default=1e-4, help='weight decay in network D, default=1e-4')
@@ -107,7 +107,7 @@ D_A.apply(weights_init)
 D_B.apply(weights_init)
 
 ###########   LOSS & OPTIMIZER   ##########
-criterionMSE = nn.AbsCriterion()
+criterionMSE = nn.L1Loss()
 if(opt.loss_type == 'bce'):
     criterion = nn.BCELoss()
 else:
@@ -174,16 +174,16 @@ for iteration in range(1,opt.niter+1):
 
     real_A.data.resize_(imgA.size()).copy_(imgA)
     real_B.data.resize_(imgB.size()).copy_(imgB)
-    label.data.resize_(imgA.size(0))
 
     ###########   fDx   ###########
     D_A.zero_grad()
     D_B.zero_grad()
 
     # train with real
-    label.data.fill_(real_label)
     outA = D_A(real_A)
     outB = D_B(real_B)
+    label.data.resize_(outA.size())
+    label.data.fill_(real_label)
     l_A = criterion(outA, label)
     l_B = criterion(outB, label)
     errD_real = l_A + l_B

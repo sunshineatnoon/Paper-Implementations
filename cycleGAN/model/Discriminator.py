@@ -34,10 +34,10 @@ class InstanceNormalization(torch.nn.Module):
         return out
 
 class Discriminator(nn.Module):
-    def __init__(self,input_nc,output_nc,ndf):
+    def __init__(self,input_nc,ndf):
         super(Discriminator,self).__init__()
         # 256 x 256
-        self.layer1 = nn.Sequential(nn.Conv2d(input_nc+output_nc,ndf,kernel_size=4,stride=2,padding=1),
+        self.layer1 = nn.Sequential(nn.Conv2d(input_nc,ndf,kernel_size=4,stride=2,padding=1),
                                  nn.LeakyReLU(0.2,inplace=True))
         # 64 x 64
         self.layer2 = nn.Sequential(nn.Conv2d(ndf,ndf*2,kernel_size=4,stride=2,padding=1),
