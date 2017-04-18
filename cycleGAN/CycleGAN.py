@@ -12,6 +12,7 @@ from torch.autograd import Variable
 from itertools import chain
 
 from utils.dataset import DATASET
+from utils.ImagePool import ImagePool
 from model.Discriminator import Discriminator
 from model.Generator import Generator
 
@@ -37,6 +38,7 @@ parser.add_argument('--G_BA', default='', help='path to pre-trained G_BA')
 parser.add_argument('--save_step', type=int, default=5000, help='save interval')
 parser.add_argument('--log_step', type=int, default=100, help='log interval')
 parser.add_argument('--loss_type', default='bce', help='GAN loss type, bce|mse default is negative likelihood loss')
+parser.add_argument('--poolSize', type=int, default=50, help='size of buffer in lsGAN, poolSize=0 indicates not using history')
 
 opt = parser.parse_args()
 print(opt)
@@ -68,7 +70,8 @@ loader_B = torch.utils.data.DataLoader(dataset=datasetB,
                                        shuffle=True,
                                        num_workers=2)
 loaderB = iter(loader_B)
-
+ABPool = ImagePool(opt.poolSize)
+BAPool = ImagePool(opt.poolSize)
 ###########   MODEL   ###########
 # custom weights initialization called on netG and netD
 def weights_init(m):
@@ -193,7 +196,10 @@ for iteration in range(1,opt.niter+1):
     label.data.fill_(fake_label)
 
     AB = G_AB(real_A)
+    AB = ABPool.Query(AB)
     BA = G_BA(real_B)
+    BA = BAPool.Query(BA)
+    
     out_BA = D_A(BA.detach())
     out_AB = D_B(AB.detach())
 
