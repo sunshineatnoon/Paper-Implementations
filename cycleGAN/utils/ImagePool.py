@@ -1,7 +1,7 @@
 import torch
 import random
 
-class ImagePool():
+class ImagePool(object):
     def __init__(self,poolSize):
         super(ImagePool,self).__init__()
         self.poolSize = poolSize
@@ -9,13 +9,13 @@ class ImagePool():
             self.num_imgs = 0
             self.images = []
 
-    def Query(img):
+    def Query(self,img):
         # not using lsGAN
         if(self.poolSize == 0):
             return img
         if(self.num_imgs < self.poolSize):
             # pool is not full
-            self.images[self.num_imgs] = img
+            self.images.append(img)
             self.num_imgs = self.num_imgs + 1
             return img
         else:
@@ -24,7 +24,7 @@ class ImagePool():
             # the newly generated image
             p = random.random()
             if(p > 0.5):
-                idx = random.randint(self.poolSize):
+                idx = random.randint(0,self.poolSize-1)
                 tmp = self.images[idx]
                 self.images[idx] = img
                 return tmp

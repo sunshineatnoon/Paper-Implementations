@@ -17,10 +17,10 @@ from model.Discriminator import Discriminator
 from model.Generator import Generator
 
 parser = argparse.ArgumentParser(description='train pix2pix model')
-parser.add_argument('--batchSize', type=int, default=10, help='with batchSize=1 equivalent to instance normalization.')
+parser.add_argument('--batchSize', type=int, default=1, help='with batchSize=1 equivalent to instance normalization.')
 parser.add_argument('--ngf', type=int, default=64)
 parser.add_argument('--ndf', type=int, default=64)
-parser.add_argument('--niter', type=int, default=15000, help='number of iterations to train for')
+parser.add_argument('--niter', type=int, default=40000, help='number of iterations to train for')
 parser.add_argument('--lr', type=float, default=0.0002, help='learning rate, default=0.0002')
 parser.add_argument('--beta1', type=float, default=0.5, help='beta1 for adam. default=0.5')
 parser.add_argument('--weight_decay', type=float, default=1e-4, help='weight decay in network D, default=1e-4')
@@ -39,6 +39,8 @@ parser.add_argument('--save_step', type=int, default=5000, help='save interval')
 parser.add_argument('--log_step', type=int, default=100, help='log interval')
 parser.add_argument('--loss_type', default='bce', help='GAN loss type, bce|mse default is negative likelihood loss')
 parser.add_argument('--poolSize', type=int, default=50, help='size of buffer in lsGAN, poolSize=0 indicates not using history')
+parser.add_argument('--lambda_ABA', type=float, default=10.0, help='weight of cycle loss ABA')
+parser.add_argument('--lambda_BAB', type=float, default=10.0, help='weight of cycle loss BAB')
 
 opt = parser.parse_args()
 print(opt)
@@ -116,7 +118,8 @@ if(opt.loss_type == 'bce'):
 else:
     criterion = nn.MSELoss()
 # chain is used to update two generators simultaneously
-optimizerD = torch.optim.Adam(chain(D_A.parameters(),D_B.parameters()),lr=opt.lr, betas=(opt.beta1, 0.999), weight_decay=opt.weight_decay)
+optimizerD_A = torch.optim.Adam(D_A.parameters(),lr=opt.lr, betas=(opt.beta1, 0.999), weight_decay=opt.weight_decay)
+optimizerD_B = torch.optim.Adam(D_B.parameters(),lr=opt.lr, betas=(opt.beta1, 0.999), weight_decay=opt.weight_decay)
 optimizerG = torch.optim.Adam(chain(G_AB.parameters(),G_BA.parameters()),lr=opt.lr, betas=(opt.beta1, 0.999))
 
 ###########   GLOBAL VARIABLES   ###########
@@ -125,17 +128,23 @@ output_nc = opt.output_nc
 fineSize = opt.fineSize
 
 real_A = torch.FloatTensor(opt.batchSize, input_nc, fineSize, fineSize)
+AB = torch.FloatTensor(opt.batchSize, input_nc, fineSize, fineSize)
 real_B = torch.FloatTensor(opt.batchSize, output_nc, fineSize, fineSize)
+BA = torch.FloatTensor(opt.batchSize, output_nc, fineSize, fineSize)
 label = torch.FloatTensor(opt.batchSize)
 
 real_A = Variable(real_A)
 real_B = Variable(real_B)
 label = Variable(label)
+AB = Variable(AB)
+BA = Variable(BA)
 
 if(opt.cuda):
     real_A = real_A.cuda()
     real_B = real_B.cuda()
     label = label.cuda()
+    AB = AB.cuda()
+    BA = BA.cuda()
     criterion.cuda()
     criterionMSE.cuda()
 
@@ -153,10 +162,24 @@ def test(niter):
     BA = G_BA(real_B)
 
     vutils.save_image(AB.data,
-            'AB_niter_%03d.png' % (niter),
+            'AB_niter_%03d_1.png' % (niter),
             normalize=True)
     vutils.save_image(BA.data,
-            'BA_niter_%03d.png' % (niter),
+            'BA_niter_%03d_1.png' % (niter),
+            normalize=True)
+
+    imgA = loaderA.next()
+    imgB = loaderB.next()
+    real_A.data.resize_(imgA.size()).copy_(imgA)
+    real_B.data.resize_(imgB.size()).copy_(imgB)
+    AB = G_AB(real_A)
+    BA = G_BA(real_B)
+
+    vutils.save_image(AB.data,
+            'AB_niter_%03d_2.png' % (niter),
+            normalize=True)
+    vutils.save_image(BA.data,
+            'BA_niter_%03d_2.png' % (niter),
             normalize=True)
 
 
@@ -195,10 +218,10 @@ for iteration in range(1,opt.niter+1):
     # train with fake
     label.data.fill_(fake_label)
 
-    AB = G_AB(real_A)
-    AB = ABPool.Query(AB)
-    BA = G_BA(real_B)
-    BA = BAPool.Query(BA)
+    AB_tmp = G_AB(real_A)
+    AB.data.resize_(AB_tmp.data.size()).copy_(ABPool.Query(AB_tmp.cpu().data))
+    BA_tmp = G_BA(real_B)
+    BA.data.resize_(BA_tmp.data.size()).copy_(BAPool.Query(BA_tmp.cpu().data))
     
     out_BA = D_A(BA.detach())
     out_AB = D_B(AB.detach())
@@ -209,8 +232,9 @@ for iteration in range(1,opt.niter+1):
     errD_fake = l_BA + l_AB
     errD_fake.backward()
 
-    errD = errD_real + errD_fake
-    optimizerD.step()
+    errD = (errD_real + errD_fake)*0.5
+    optimizerD_A.step()
+    optimizerD_B.step()
 
     ########### fGx ###########
     G_AB.zero_grad()
@@ -230,8 +254,8 @@ for iteration in range(1,opt.niter+1):
     l_AB = criterion(out_AB,label)
 
     # reconstruction loss
-    l_rec_ABA = criterionMSE(ABA, real_A)
-    l_rec_BAB = criterionMSE(BAB, real_B)
+    l_rec_ABA = criterionMSE(ABA, real_A) * opt.lambda_ABA
+    l_rec_BAB = criterionMSE(BAB, real_B) * opt.lambda_BAB
 
     errGAN = l_BA + l_AB
     errMSE =  l_rec_ABA + l_rec_BAB
