@@ -1,4 +1,4 @@
-# PyTorch Implementation of DiscoGAN
+# PyTorch Implementation of CycleGAN
 
 PyTorch implementation of [Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks](https://junyanz.github.io/CycleGAN/) on the Facades dataset.
 
