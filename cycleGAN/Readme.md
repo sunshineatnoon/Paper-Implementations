@@ -42,6 +42,10 @@ To train or generate on other dataset, change `dataPath` accordingly.
 
   ![B](samples/B.png "B") ![BA](samples/BA.png "BA") ![BAB](samples/BAB.png "BAB")
 
+## Notes
+- [DiscoGAN](https://github.com/sunshineatnoon/Paper-Implementations/tree/master/DiscoGAN) can't generate high quality reconstruction images on the Facades dataset, one thing that CycleGAN resolves this is by using a generator containing 6 residual blocks. 
+- It's important **not** to chain the parameters of two discriminators together, otherwise severe mode collapse when `batchSize=1` will be observed.
+
 ## Reference
 1. [https://github.com/junyanz/CycleGAN](https://github.com/junyanz/CycleGAN)
 2. Zhu J Y, Park T, Isola P, et al. Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks[J]. arXiv preprint arXiv:1703.10593, 2017.
