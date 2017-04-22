@@ -44,11 +44,11 @@ To train or generate on other dataset, change `dataPath` accordingly.
 
 **A -> B -> A**
 
-  <img src="samples/A.png" width="250"> <img src="samples/AB.png" width="250"> <img src="samples/ABA.png" width="250">
+  <img src="samples/mseloss/A.png" width="250"> <img src="samples/mseloss/AB.png" width="250"> <img src="samples/mseloss/ABA.png" width="250">
 
 **B -> A -> B**
 
-  <img src="samples/B.png" width="250"> <img src="samples/BA.png" width="250"> <img src="samples/BAB.png" width="250">
+  <img src="samples/mseloss/B.png" width="250"> <img src="samples/mseloss/BA.png" width="250"> <img src="samples/mseloss/BAB.png" width="250">
 
 ## Notes
 - [DiscoGAN](https://github.com/sunshineatnoon/Paper-Implementations/tree/master/DiscoGAN) can't generate high quality reconstruction images on the Facades dataset, one thing that CycleGAN resolves this is by using a generator containing 6 residual blocks.
