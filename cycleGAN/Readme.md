@@ -36,6 +36,14 @@ To train or generate on other dataset, change `dataPath` accordingly.
 
 **A -> B -> A**
 
+  ![A](samples/apple2orange/A.png "A") ![AB](samples/apple2orange/AB.png "AB") ![ABA](samples/apple2orange/ABA.png "ABA")
+
+**B -> A -> B**
+
+  ![B](samples/apple2orange/B.png "B") ![BA](samples/apple2orange/BA.png "BA") ![BAB](samples/apple2orange/BAB.png "BAB")
+
+**A -> B -> A**
+
   ![A](samples/A.png "A") ![AB](samples/AB.png "AB") ![ABA](samples/ABA.png "ABA")
 
 **B -> A -> B**
@@ -43,10 +51,9 @@ To train or generate on other dataset, change `dataPath` accordingly.
   ![B](samples/B.png "B") ![BA](samples/BA.png "BA") ![BAB](samples/BAB.png "BAB")
 
 ## Notes
-- [DiscoGAN](https://github.com/sunshineatnoon/Paper-Implementations/tree/master/DiscoGAN) can't generate high quality reconstruction images on the Facades dataset, one thing that CycleGAN resolves this is by using a generator containing 6 residual blocks. 
+- [DiscoGAN](https://github.com/sunshineatnoon/Paper-Implementations/tree/master/DiscoGAN) can't generate high quality reconstruction images on the Facades dataset, one thing that CycleGAN resolves this is by using a generator containing 6 residual blocks.
 - It's important **not** to chain the parameters of two discriminators together, otherwise severe mode collapse when `batchSize=1` will be observed.
 
 ## Reference
 1. [https://github.com/junyanz/CycleGAN](https://github.com/junyanz/CycleGAN)
 2. Zhu J Y, Park T, Isola P, et al. Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks[J]. arXiv preprint arXiv:1703.10593, 2017.
-
