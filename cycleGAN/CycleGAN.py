@@ -28,16 +28,16 @@ parser.add_argument('--cuda', action='store_true', help='enables cuda')
 parser.add_argument('--outf', default='checkpoints/', help='folder to output images and model checkpoints')
 parser.add_argument('--manualSeed', type=int, help='manual seed')
 parser.add_argument('--dataPath', default='facades/train/', help='path to training images')
-parser.add_argument('--loadSize', type=int, default=64, help='scale image to this size')
-parser.add_argument('--fineSize', type=int, default=64, help='random crop image to this size')
+parser.add_argument('--loadSize', type=int, default=143, help='scale image to this size')
+parser.add_argument('--fineSize', type=int, default=128, help='random crop image to this size')
 parser.add_argument('--flip', type=int, default=1, help='1 for flipping image randomly, 0 for not')
 parser.add_argument('--input_nc', type=int, default=3, help='channel number of input image')
 parser.add_argument('--output_nc', type=int, default=3, help='channel number of output image')
 parser.add_argument('--G_AB', default='', help='path to pre-trained G_AB')
 parser.add_argument('--G_BA', default='', help='path to pre-trained G_BA')
-parser.add_argument('--save_step', type=int, default=5000, help='save interval')
+parser.add_argument('--save_step', type=int, default=20000, help='save interval')
 parser.add_argument('--log_step', type=int, default=100, help='log interval')
-parser.add_argument('--loss_type', default='bce', help='GAN loss type, bce|mse default is negative likelihood loss')
+parser.add_argument('--loss_type', default='mse', help='GAN loss type, bce|mse default is negative likelihood loss')
 parser.add_argument('--poolSize', type=int, default=50, help='size of buffer in lsGAN, poolSize=0 indicates not using history')
 parser.add_argument('--lambda_ABA', type=float, default=10.0, help='weight of cycle loss ABA')
 parser.add_argument('--lambda_BAB', type=float, default=10.0, help='weight of cycle loss BAB')
@@ -60,8 +60,8 @@ if opt.cuda:
 
 cudnn.benchmark = True
 ##########   DATASET   ###########
-datasetA = DATASET(os.path.join(opt.dataPath,'B'),opt.loadSize,opt.fineSize,opt.flip)
-datasetB = DATASET(os.path.join(opt.dataPath,'A'),opt.loadSize,opt.fineSize,opt.flip)
+datasetA = DATASET(os.path.join(opt.dataPath,'A'),opt.loadSize,opt.fineSize,opt.flip)
+datasetB = DATASET(os.path.join(opt.dataPath,'B'),opt.loadSize,opt.fineSize,opt.flip)
 loader_A = torch.utils.data.DataLoader(dataset=datasetA,
                                        batch_size=opt.batchSize,
                                        shuffle=True,
