@@ -36,19 +36,19 @@ To train or generate on other dataset, change `dataPath` accordingly.
 
 **A -> B -> A**
 
-  ![A](samples/apple2orange/A.png "A") ![AB](samples/apple2orange/AB.png "AB") ![ABA](samples/apple2orange/ABA.png "ABA")
+  <img src="samples/apple2orange/A.png" width="250"> <img src="samples/apple2orange/AB.png" width="250"> <img src="samples/apple2orange/ABA.png" width="250">
 
 **B -> A -> B**
 
-  ![B](samples/apple2orange/B.png "B") ![BA](samples/apple2orange/BA.png "BA") ![BAB](samples/apple2orange/BAB.png "BAB")
+  <img src="samples/apple2orange/B.png" width="250"> <img src="samples/apple2orange/BA.png" width="250"> <img src="samples/apple2orange/BAB.png" width="250">
 
 **A -> B -> A**
 
-  ![A](samples/A.png "A") ![AB](samples/AB.png "AB") ![ABA](samples/ABA.png "ABA")
+  <img src="samples/A.png" width="250"> <img src="samples/AB.png" width="250"> <img src="samples/ABA.png" width="250">
 
 **B -> A -> B**
 
-  ![B](samples/B.png "B") ![BA](samples/BA.png "BA") ![BAB](samples/BAB.png "BAB")
+  <img src="samples/B.png" width="250"> <img src="samples/BA.png" width="250"> <img src="samples/BAB.png" width="250">
 
 ## Notes
 - [DiscoGAN](https://github.com/sunshineatnoon/Paper-Implementations/tree/master/DiscoGAN) can't generate high quality reconstruction images on the Facades dataset, one thing that CycleGAN resolves this is by using a generator containing 6 residual blocks.
