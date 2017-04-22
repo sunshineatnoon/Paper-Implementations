@@ -10,9 +10,9 @@ import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
 from torch.autograd import Variable
-from model.Discriminator import Discriminator
-from model.Generator import Generator
-from data.dataset import CelebA 
+from models import Discriminator
+from models import Generator
+from data.dataset import CelebA
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batchSize', type=int, default=64, help='input batch size')
@@ -29,6 +29,8 @@ parser.add_argument('--cuda', action='store_true', help='enables cuda')
 parser.add_argument('--outf', default='dcgan/', help='folder to output images and model checkpoints')
 parser.add_argument('--manualSeed', type=int, help='manual seed')
 parser.add_argument('--dataPath', default='data/CelebA/images/', help='which dataset to train on')
+parser.add_argument('--lambda_k', type=float, default=0.001, help='learning rate of k')
+parser.add_argument('--gamma', type=float, default=0.5, help='balance bewteen D and G')
 
 opt = parser.parse_args()
 print(opt)
@@ -68,7 +70,7 @@ if(opt.cuda):
     netG.cuda()
 
 ###########   LOSS & OPTIMIZER   ##########
-criterion = nn.BCELoss()
+criterion = nn.L1Loss()
 optimizerD = torch.optim.Adam(netD.parameters(),lr=opt.lr, betas=(opt.beta1, 0.999))
 optimizerG = torch.optim.Adam(netG.parameters(),lr=opt.lr, betas=(opt.beta1, 0.999))
 
@@ -88,45 +90,43 @@ if(opt.cuda):
     label = label.cuda()
 
 ########### Training   ###########
+k = 0
 for epoch in range(1,opt.niter+1):
     for i, images in enumerate(loader):
-        ########### fDx ###########
         netD.zero_grad()
-        # train with real data, resize real because last batch may has less than
-        # opt.batchSize images
+        netG.zero_grad()
+
         real.data.resize_(images.size()).copy_(images)
-        label.data.resize_(images.size(0)).fill_(real_label)
 
-        output = netD(real)
-        errD_real = criterion(output, label)
-        errD_real.backward()
-
-        # train with fake data
-        label.data.fill_(fake_label)
+        # generate fake data
         noise.data.resize_(images.size(0), opt.nz, 1, 1)
         noise.data.normal_(0,1)
-
         fake = netG(noise)
-        # detach gradients here so that gradients of G won't be updated
-        output = netD(fake.detach())
-        errD_fake = criterion(output,label)
-        errD_fake.backward()
 
-        errD = errD_fake + errD_real
+        fake_recons = netD(fake)
+        real_recons = netD(fake)
+
+        errD_real = torch.mean(criterion(torch.abs(real_recons-real)))
+        errD_fake = torch.mean(criterion(torch.abs(fake_recons-fake)))
+
+        errD = errD_real - k*errD_fake
+        errG = errD_fake
+
+        balance = (opt.gamma * errD_real - errD_fake).data[0]
+        k = np.clip(k + opt.lambda_k * balance,0,1)
+
+        measure = errD_real.data[0] + torch.abs(balance)
+
+        errD.backward()
         optimizerD.step()
 
-        ########### fGx ###########
-        netG.zero_grad()
-        label.data.fill_(real_label)
-        output = netD(fake)
-        errG = criterion(output, label)
         errG.backward()
         optimizerG.step()
 
         ########### Logging #########
-        print('[%d/%d][%d/%d] Loss_D: %.4f Loss_G: %.4f '
+        print('[%d/%d][%d/%d] Loss_D: %.4f Loss_G: %.4f Measure: %.4f '
                   % (epoch, opt.niter, i, len(loader),
-                     errD.data[0], errG.data[0]))
+                     errD.data[0], errG.data[0], measure))
 
         ########## Visualize #########
         if(i % 50 == 0):
