@@ -1,31 +1,25 @@
-# PyTorch Implementation of DCGAN
+# PyTorch Implementation of BEGAN
+
+PyTorch Implementation of [BEGAN: Boundary Equilibrium Generative Adversarial Networks](https://arxiv.org/abs/1703.10717).
 
 ## Prerequisites
 - PyTorch
 - torchvision
 
 ## Training
-- Train on MNIST
+- Download [CelebA](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html), choose the `Aligh&Croped Images` zip.
+- Training
   ```
-  python dcgan.py --cuda --dataset MNIST
+  python began.py --cuda
   ```
-- Train on CIFAR
-  ```
-  python dcgan.py --cuda --dataset CIFAR
-  ```
-**Train on CPU: leave out the `--cuda` parameter**
 
 ## Generate
-- Generate MNIST
   ```
-  python generate.py --netG dcgan/MNIST.pth --batchSize 100 --dataset MNIST
+  python generate.py --netG dcgan/netG.pth --batchSize 16
   ```
-- Generate CIFAR
-  ```
-  python generate.py --netG dcgan/CIFAR.pth --batchSize 100 --dataset CIFAR
-  ```
-![MNIST](dcgan/MNIST.png "MNIST") ![CIFAR](dcgan/CIFAR.png "CIFAR")
+- γ = 0.5, 64 x 64
+![generation](dcgan/fake.png "BEGAN")
 
 ## Reference
-1. [https://github.com/yunjey/pytorch-tutorial](https://github.com/yunjey/pytorch-tutorial)
-2. [https://github.com/pytorch/examples](https://github.com/pytorch/examples)
+1. [https://github.com/carpedm20/BEGAN-tensorflow](https://github.com/carpedm20/BEGAN-tensorflow)
+2. Berthelot, David, Tom Schumm, and Luke Metz. "BEGAN: Boundary Equilibrium Generative Adversarial Networks." arXiv preprint arXiv:1703.10717 (2017).
