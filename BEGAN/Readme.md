@@ -7,7 +7,7 @@ PyTorch Implementation of [BEGAN: Boundary Equilibrium Generative Adversarial Ne
 - torchvision
 
 ## Training
-- Download [CelebA](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html), choose the `Aligh&Croped Images` zip.
+- Download [CelebA](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html), choose the `Aligh&Croped Images` zip. Unzip it and put it under `data/` directory.
 - Training
   ```
   python began.py --cuda
@@ -18,6 +18,7 @@ PyTorch Implementation of [BEGAN: Boundary Equilibrium Generative Adversarial Ne
   python generate.py --netG dcgan/netG.pth --batchSize 16
   ```
 - γ = 0.5, 64 x 64
+
 ![generation](dcgan/fake.png "BEGAN")
 
 ## Reference
