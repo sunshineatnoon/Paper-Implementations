@@ -14,6 +14,7 @@ Use PyTorch to implement some classic papers
 - [DiscoGAN](https://github.com/sunshineatnoon/PyTorchExamples/tree/master/DiscoGAN)
 - [CycleGAN](https://github.com/sunshineatnoon/Paper-Implementations/tree/master/cycleGAN)
 - [BEGAN](https://github.com/sunshineatnoon/Paper-Implementations/tree/master/BEGAN)
+- [VAE](https://github.com/sunshineatnoon/Paper-Implementations/tree/master/VAE)
 
 **LSTM**
 - [Char RNN](https://github.com/sunshineatnoon/PyTorchExamples/tree/master/char-rnn)
