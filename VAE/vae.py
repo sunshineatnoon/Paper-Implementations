@@ -9,6 +9,7 @@ import torch.optim as optim
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
+import numpy as np
 from torch.autograd import Variable
 
 
@@ -21,6 +22,7 @@ parser.add_argument('--cuda', action='store_true', help='enables cuda')
 parser.add_argument('--outf', default='samples/', help='folder to output images and model checkpoints')
 parser.add_argument('--manualSeed', type=int, help='manual seed')
 parser.add_argument('--log_interval', type=int, default=50, help='manual seed')
+parser.add_argument('--hidden_size', type=int, default=20, help='size of z')
 
 opt = parser.parse_args()
 print(opt)
@@ -70,9 +72,9 @@ class VAE(nn.Module):
                                  nn.BatchNorm2d(n),
                                  nn.LeakyReLU(0.2,inplace=True))
 
-        self.fc11 = nn.Linear(n * 7 * 7, 20)
-        self.fc12 = nn.Linear(n * 7 * 7, 20)
-        self.fc2 = nn.Linear(20, n * 7 * 7)
+        self.fc11 = nn.Linear(n * 7 * 7, opt.hidden_size)
+        self.fc12 = nn.Linear(n * 7 * 7, opt.hidden_size)
+        self.fc2 = nn.Linear(opt.hidden_size, n * 7 * 7)
 
         self.deconv1 = nn.Sequential(nn.ConvTranspose2d(n,n,kernel_size=4,stride=2,padding=1),
                                  nn.BatchNorm2d(n),
@@ -117,7 +119,7 @@ class VAE(nn.Module):
 
 model = VAE()
 if(opt.cuda):
-    mode.cuda()
+    model.cuda()
 ###########   LOSS & OPTIMIZER   ##########
 bce = nn.BCELoss()
 bce.size_average = False
@@ -138,7 +140,7 @@ if(opt.cuda):
 ###############   TRAINING   ##################
 def sample(epoch):
     model.eval()
-    eps = torch.FloatTensor(opt.batchSize, 20).normal_()
+    eps = torch.FloatTensor(opt.batchSize, opt.hidden_size).normal_()
     eps = Variable(eps)
     if(opt.cuda):
         eps = eps.cuda()
@@ -147,6 +149,25 @@ def sample(epoch):
                 '%s/fake_samples_epoch_%03d.png' % (opt.outf, epoch),
                 normalize=True)
 
+def sample2d(epoch):
+    model.eval()
+    eps = torch.FloatTensor(400, opt.hidden_size)
+    nx = ny = 20
+    x_values = np.linspace(-3, 3, nx)
+    y_values = np.linspace(-3, 3, ny)
+    for i in range(nx):
+        for j in range(ny):
+            eps[i*20+j][0] = x_values[i]
+            eps[i*20+j][1] = y_values[j]
+
+    eps = Variable(eps)
+    if(opt.cuda):
+        eps = eps.cuda()
+    fake = model.decoder(eps)
+    vutils.save_image(fake.data.resize_(400,1,opt.imageSize,opt.imageSize),
+                '%s/fake_samples_epoch_%03d.png' % (opt.outf, epoch),
+                normalize=True,
+                nrow=20)
 def train(epoch):
     model.train()
     for i, (images,_) in enumerate(loader):
@@ -165,3 +186,5 @@ def train(epoch):
 
 for epoch in range(1, opt.niter + 1):
     train(epoch)
+if(opt.hidden_size == 2):
+    sample2d(epoch)
