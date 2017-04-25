@@ -1,4 +1,4 @@
-# PyTorch Implementation of [[Auto-Encoding Variational Bayes]](https://arxiv.org/pdf/1312.6114.pdf)
+# PyTorch Implementation of [Auto-Encoding Variational Bayes](https://arxiv.org/pdf/1312.6114.pdf)
 
 ## Prerequisites
 - PyTorch
