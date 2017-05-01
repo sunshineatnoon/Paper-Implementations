@@ -55,7 +55,7 @@ if(opt.cuda):
     netG.cuda()
     noise = noise.cuda()
 
-noise.data.normal_(0,1)
+noise.data.uniform_(-1,1)
 fake = netG(noise)
 vutils.save_image(fake.data,
             '%s/samples.png' % (opt.outf),
