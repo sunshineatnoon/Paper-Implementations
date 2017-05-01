@@ -6,6 +6,7 @@ from os.path import join
 import os
 from PIL import Image
 import random
+import math
 
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in [".png", ".jpg", ".jpeg"])
@@ -67,8 +68,11 @@ class CelebA(data.Dataset):
             img = img.resize((self.loadSize, self.loadSize), Image.BILINEAR)
 
         if(self.loadSize != self.fineSize):
-            x1 = random.randint(0, self.loadSize - self.fineSize)
-            y1 = random.randint(0, self.loadSize - self.fineSize)
+            #x1 = random.randint(0, self.loadSize - self.fineSize)
+            #y1 = random.randint(0, self.loadSize - self.fineSize)
+             
+            x1 = math.floor((self.loadSize - self.fineSize)/2)
+            y1 = math.floor((self.loadSize - self.fineSize)/2)
             img = img.crop((x1, y1, x1 + self.fineSize, y1 + self.fineSize))
 
         if(self.flip == 1):

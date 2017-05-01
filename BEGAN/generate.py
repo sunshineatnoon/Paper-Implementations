@@ -10,19 +10,18 @@ import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
 from torch.autograd import Variable
-from model.Generator import Generator
+from models import Generator
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batchSize', type=int, default=64, help='input batch size')
-parser.add_argument('--imageSize', type=int, default=32, help='the height / width of the input image to network')
-parser.add_argument('--nz', type=int, default=100, help='size of the latent z vector')
+parser.add_argument('--imageSize', type=int, default=128, help='the height / width of the input image to network')
+parser.add_argument('--nz', type=int, default=128, help='size of the latent z vector')
 parser.add_argument('--cuda', action='store_true', help='enables cuda')
 parser.add_argument('--netG', default='', help="path to netG (to continue training)")
 parser.add_argument('--outf', default='dcgan/', help='folder to output images and model checkpoints')
 parser.add_argument('--manualSeed', type=int, help='manual seed')
-parser.add_argument('--ngf', type=int, default=64)
-parser.add_argument('--dataset', default='CIFAR', help='which dataset to train on, CIFAR|MNIST')
+parser.add_argument('--ngf', type=int, default=128)
 
 opt = parser.parse_args()
 print(opt)
@@ -44,14 +43,12 @@ cudnn.benchmark = True
 
 ###########   Load netG   ###########
 assert opt.netG != '', "netG must be provided!"
-nc = 1
-if(opt.dataset == 'CIFAR'):
-    nc = 3
-netG = Generator(nc, opt.ngf, opt.nz)
+nc = 3
+netG = Generator(nc, opt.ngf, opt.nz, opt.imageSize)
 netG.load_state_dict(torch.load(opt.netG))
 
 ###########   Generate   ###########
-noise = torch.FloatTensor(opt.batchSize, opt.nz, 1, 1)
+noise = torch.FloatTensor(opt.batchSize, opt.nz)
 noise = Variable(noise)
 
 if(opt.cuda):
