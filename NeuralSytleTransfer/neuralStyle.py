@@ -20,7 +20,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--imageSize', type=int, default=512, help='the height / width of the input image to network')
 parser.add_argument('--style_image', default="images/picasso.jpg", help='path to style image')
 parser.add_argument('--content_image', default="images/dancing.jpg", help='path to style image')
-parser.add_argument('--niter', type=int, default=1000, help='number of epochs to train for')
+parser.add_argument('--niter', type=int, default=100, help='number of epochs to train for')
 parser.add_argument('--lr', type=float, default=1e1, help='learning rate, default=0.0002')
 parser.add_argument('--cuda', action='store_true', help='enables cuda')
 parser.add_argument('--outf', default='images/', help='folder to output images and model checkpoints')
@@ -64,14 +64,17 @@ def load_image(path):
     return img
 styleImg = load_image(opt.style_image) # 1x3x512x512
 contentImg = load_image(opt.content_image) # 1x3x512x512
+if(opt.cuda):
+    styleImg = styleImg.cuda()
+    contentImg = contentImg.cuda()
 
 ###############   MODEL   ####################
 vgg = VGG()
 vgg.load_state_dict(torch.load(opt.vgg_dir))
 for param in vgg.parameters():
     param.requires_grad = False
-print(vgg)
-
+if(opt.cuda):
+    vgg.cuda()
 ###########   LOSS & OPTIMIZER   ##########
 class GramMatrix(nn.Module):
     def forward(self,input):
@@ -111,12 +114,13 @@ optimizer = optim.LBFGS([optImg]);
 
 # shift everything to cuda if possible
 if(opt.cuda):
-    vgg.cuda()
     for loss in losses:
         loss = loss.cuda()
     optImg.cuda()
 ###########   TRAINING   ##########
-for iteration in range(1,opt.niter):
+
+for iteration in range(1,opt.niter+1):
+    print('Iteration [%d]/[%d]'%(iteration,opt.niter))
     def closure():
         optimizer.zero_grad()
         out = vgg(optImg,loss_layers)
@@ -128,10 +132,9 @@ for iteration in range(1,opt.niter):
             totalLossList.append(loss_i(layer_output,target_i) * weights[i])
         totalLoss = sum(totalLossList)
         totalLoss.backward()
-        print('Iteration: %d, loss: %f'%(iteration, totalLoss.data[0]))
+        print('loss: %f'%(totalLoss.data[0]))
         return totalLoss
     optimizer.step(closure)
-    #optImg.clamp_(0,1)
 
 vutils.save_image(optImg.data,
             '%s/transferred.png' % (opt.outf),
