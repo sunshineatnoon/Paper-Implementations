@@ -133,9 +133,10 @@ for iteration in range(1,opt.niter+1):
         totalLoss = sum(totalLossList)
         totalLoss.backward()
         print('loss: %f'%(totalLoss.data[0]))
+        optImg.data.clamp_(0,1)
         return totalLoss
     optimizer.step(closure)
 
-vutils.save_image(optImg.data,
-            '%s/transferred.png' % (opt.outf),
+vutils.save_image(optImg.data.clamp_(0,1),
+            '%s/transfer.png' % (opt.outf),
             normalize=True)
