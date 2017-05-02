@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 import torch.optim as optim
+import torchvision.utils as vutils
 
 import PIL
 from PIL import Image
@@ -46,21 +47,6 @@ assert style.size() == content.size(
 # display
 
 unloader = transforms.ToPILImage()  # reconvert into PIL image
-
-
-def imshow(tensor):
-    image = tensor.clone().cpu()  # we clone the tensor to not do changes on it
-    image = image.view(3, imsize, imsize)  # remove the fake batch dimension
-    image = unloader(image)
-    plt.imshow(image)
-
-
-fig = plt.figure()
-
-plt.subplot(221)
-imshow(style.data)
-plt.subplot(222)
-imshow(content.data)
 
 # content loss
 
@@ -205,10 +191,6 @@ input = image_loader("images/dancing.jpg").type(dtype)
 # if we want to fill it with a white noise:
 #input.data = torch.randn(input.data.size()).type(dtype)
 
-# add the original input image to the figure:
-plt.subplot(223)
-imshow(input.data)
-
 # gradient descent
 
 # this line to show that input is a parameter that requires a gradient
@@ -244,8 +226,6 @@ while run[0] <= 300:
 
 # a last correction...
 input.data.clamp_(0, 1)
-
-# finally enjoy the result:
-plt.subplot(224)
-imshow(input.data)
-plt.show()
+vutils.save_image(input.data,
+            'images/transfer.png',
+            normalize=True)
