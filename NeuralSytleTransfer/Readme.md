@@ -25,5 +25,5 @@ Transferred image will be stored as `images/transfer.png`
 <img src="images/corgi.jpg" height="200"> <img src="images/candy.jpg" height="200"> <img src="images/transfer_corgi.png" height="200">
 
 ## Reference
-1. [https://github.com/yunjey/pytorch-tutorial](https://github.com/yunjey/pytorch-tutorial)
-2. [https://github.com/pytorch/examples](https://github.com/pytorch/examples)
+1. [https://github.com/leongatys/PytorchNeuralStyleTransfer](https://github.com/leongatys/PytorchNeuralStyleTransfer)
+2. [https://github.com/alexis-jacq/Pytorch-Tutorials](https://github.com/alexis-jacq/Pytorch-Tutorials)
