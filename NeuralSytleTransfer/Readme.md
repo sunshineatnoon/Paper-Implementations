@@ -20,9 +20,9 @@
 
 Transferred image will be stored as `images/transfer.png`
 
-<img src="images/dancing.jpg" height="200"> <img src="images/picasso.jpg" height="200"> <img src="images/transfer.png" height="200">
+<img src="images/dancing.jpg" height="200"> <img src="images/picasso.jpg" height="200"> <img src="images/transfer_dancing.png" height="200">
 
-<img src="images/corgi.jpg" height="200"> <img src="images/candy.jpg" height="200"> <img src="images/transferred.png" height="200">
+<img src="images/corgi.jpg" height="200"> <img src="images/candy.jpg" height="200"> <img src="images/transfer_corgi.png" height="200">
 
 ## Reference
 1. [https://github.com/yunjey/pytorch-tutorial](https://github.com/yunjey/pytorch-tutorial)

@@ -55,13 +55,28 @@ cudnn.benchmark = True
 ###############   DATASET   ##################
 transform = transforms.Compose([
     transforms.Scale(opt.imageSize),
-    transforms.ToTensor()
+    transforms.ToTensor(),
+    transforms.Lambda(lambda x: x[torch.LongTensor([2,1,0])]), #turn to BGR
+    transforms.Normalize(mean=[0.40760392, 0.45795686, 0.48501961],std=[1,1,1]), 
+    transforms.Lambda(lambda x: x.mul_(255)),
     ])
 def load_image(path):
     img = Image.open(path)
     img = Variable(transform(img))
     img = img.unsqueeze(0)
     return img
+def save_image(img):
+    post = transforms.Compose([transforms.Lambda(lambda x: x.mul_(1./255)),
+         transforms.Normalize(mean=[-0.40760392, -0.45795686, -0.48501961], std=[1,1,1]),
+         transforms.Lambda(lambda x: x[torch.LongTensor([2,1,0])]), #turn to RGB
+         ])
+    img = post(img)
+    img = img.clamp_(0,1)
+    vutils.save_image(img,
+                '%s/transfer.png' % (opt.outf),
+                normalize=True)
+    return 
+
 styleImg = load_image(opt.style_image) # 1x3x512x512
 contentImg = load_image(opt.content_image) # 1x3x512x512
 if(opt.cuda):
@@ -133,10 +148,6 @@ for iteration in range(1,opt.niter+1):
         totalLoss = sum(totalLossList)
         totalLoss.backward()
         print('loss: %f'%(totalLoss.data[0]))
-        optImg.data.clamp_(0,1)
         return totalLoss
     optimizer.step(closure)
-
-vutils.save_image(optImg.data.clamp_(0,1),
-            '%s/transfer.png' % (opt.outf),
-            normalize=True)
+save_image(optImg.data[0].cpu().squeeze())
