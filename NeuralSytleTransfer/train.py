@@ -174,6 +174,7 @@ for iteration in range(1,opt.niter+1):
     optimizer.step(closure)
 outImg = optImg.data[0].cpu()
 if(opt.luminance_only):
+    outImg = np.expand_dims(outImg.numpy(),0)
     outImg = util.join_yiq_to_bgr(outImg,content_iq)
 
-save_image(outImg.squeeze())
+save_image(torch.from_numpy(outImg).squeeze())

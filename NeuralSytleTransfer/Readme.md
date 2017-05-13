@@ -23,10 +23,18 @@
 
    This implements [Preserving Color in Neural Artistic Style Transfer](https://arxiv.org/abs/1606.05897). [Color Histogram Transfer algorithm](https://github.com/sunshineatnoon/Paper-Implementations/blob/master/NeuralSytleTransfer/util.py#L15) is copied from [chainer-neural-style](https://github.com/dsanno/chainer-neural-style/blob/master/src/util.py#L99).
    
+   **Approach I: Color Histogram Matching**
+
    ```
    python train.py --style_image images/picasso.jpg --content_image images/NY.png --content_weight 500 --style_weight 1 --cuda --color_histogram_matching
    ```
    <img src="images/NY.png" height="200"> <img src="images/picasso.jpg" height="200"> <img src="images/NY_transfer.png" height="200">
+
+   **Approach II: Luminance-only Neural Style Transfer**
+   ```
+   python train.py --style_image images/picasso.jpg --content_image images/NY.png --cuda --luminance_only
+   ```
+   <img src="images/NY.png" height="200"> <img src="images/picasso.jpg" height="200"> <img src="images/NY_luminance.png" height="200">
 
 **Train on CPU: leave out the `--cuda` parameter**
 
