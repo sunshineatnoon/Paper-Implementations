@@ -16,5 +16,8 @@ Use PyTorch to implement some classic papers
 - [BEGAN](https://github.com/sunshineatnoon/Paper-Implementations/tree/master/BEGAN)
 - [VAE](https://github.com/sunshineatnoon/Paper-Implementations/tree/master/VAE)
 
+**Neural Style Transfer**
+- [Neural Style Transfer](https://github.com/sunshineatnoon/Paper-Implementations/tree/master/NeuralSytleTransfer)
+
 **LSTM**
 - [Char RNN](https://github.com/sunshineatnoon/PyTorchExamples/tree/master/char-rnn)
