@@ -17,7 +17,8 @@ Use PyTorch to implement some classic papers
 - [VAE](https://github.com/sunshineatnoon/Paper-Implementations/tree/master/VAE)
 
 **Neural Style Transfer**
-- [Neural Style Transfer](https://github.com/sunshineatnoon/Paper-Implementations/tree/master/NeuralSytleTransfer)
+- [Neural Style Transfer](https://github.com/sunshineatnoon/Paper-Implementations/tree/master/NeuralSytleTransfer#neural-style-transfer)
+- [Preserving Color in Neural Artistic Style Transfer](https://github.com/sunshineatnoon/Paper-Implementations/tree/master/NeuralSytleTransfer#neural-style-transfer-with-color-preservation)
 
 **LSTM**
 - [Char RNN](https://github.com/sunshineatnoon/PyTorchExamples/tree/master/char-rnn)
