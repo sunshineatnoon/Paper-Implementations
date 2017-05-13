@@ -21,7 +21,7 @@
   <img src="images/corgi.jpg" height="200"> <img src="images/candy.jpg" height="200"> <img src="images/transfer_corgi.png" height="200">
 ## Neural Style Transfer with Color Preservation
 
-   This implements [Preserving Color in Neural Artistic Style Transfer](https://arxiv.org/abs/1606.05897). Color Histogram Transfer algorithm is copied from [chainer-neural-style](https://github.com/dsanno/chainer-neural-style).
+   This implements [Preserving Color in Neural Artistic Style Transfer](https://arxiv.org/abs/1606.05897). [Color Histogram Transfer algorithm](https://github.com/sunshineatnoon/Paper-Implementations/blob/master/NeuralSytleTransfer/util.py#L15) is copied from [chainer-neural-style](https://github.com/dsanno/chainer-neural-style/blob/master/src/util.py#L99).
    
    ```
    python train.py --style_image images/picasso.jpg --content_image images/NY.png --content_weight 500 --style_weight 1 --cuda --color_histogram_matching
