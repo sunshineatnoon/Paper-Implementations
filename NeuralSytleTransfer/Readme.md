@@ -49,6 +49,5 @@ Transferred image will be stored as `images/transfer.png`
 
 
 ## Reference
-1. [https://github.com/yunjey/pytorch-tutorial](https://github.com/yunjey/pytorch-tutorial)
-2. [https://github.com/pytorch/examples](https://github.com/pytorch/examples)
-3. [https://github.com/dsanno/chainer-neural-style](https://github.com/dsanno/chainer-neural-style)
+1. [https://github.com/leongatys/PytorchNeuralStyleTransfer](https://github.com/leongatys/PytorchNeuralStyleTransfer)
+2. [https://github.com/dsanno/chainer-neural-style](https://github.com/dsanno/chainer-neural-style)
