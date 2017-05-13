@@ -43,6 +43,8 @@
    ```
    <img src="images/NY.png" height="200"> <img src="images/picasso.jpg" height="200"> <img src="images/NY_luminance.png" height="200">
 
+  <img src="images/corgi.jpg" height="200"> <img src="images/picasso.jpg" height="200"> <img src="images/corgi_luminance.png" height="200">
+
 **Train on CPU: leave out the `--cuda` parameter**
 
 Transferred image will be stored as `images/transfer.png`
