@@ -1,4 +1,9 @@
-# PyTorch Implementation of [Image Style Transfer Using Convolutional Neural Networks](http://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Gatys_Image_Style_Transfer_CVPR_2016_paper.pdf)
+# PyTorch Implementation of Neural Style Transfer Algorithms
+
+- [Image Style Transfer Using Convolutional Neural Networks](#neural-style-transfer)
+
+- [Preserving Color in Neural Artistic Style Transfer](#neural-style-transfer-with-color-preservation)
+
 
 **This code heavily borrows from [https://github.com/leongatys/PytorchNeuralStyleTransfer](https://github.com/leongatys/PytorchNeuralStyleTransfer), which is an elegant example to show how to extract intermediate features from pre-trained models in PyTorch**
 
@@ -13,15 +18,17 @@
   cd ..
   ```
 ## Neural Style Transfer 
+  This section implements the paper [Image Style Transfer Using Convolutional Neural Networks](http://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Gatys_Image_Style_Transfer_CVPR_2016_paper.pdf)
   ```
   python neuralStyle.py --cuda
   ```
   <img src="images/dancing.jpg" height="200"> <img src="images/picasso.jpg" height="200"> <img src="images/dancing_transfer.png" height="200">
 
   <img src="images/corgi.jpg" height="200"> <img src="images/candy.jpg" height="200"> <img src="images/transfer_corgi.png" height="200">
+  
 ## Neural Style Transfer with Color Preservation
 
-   This implements [Preserving Color in Neural Artistic Style Transfer](https://arxiv.org/abs/1606.05897). [Color Histogram Transfer algorithm](https://github.com/sunshineatnoon/Paper-Implementations/blob/master/NeuralSytleTransfer/util.py#L15) is copied from [chainer-neural-style](https://github.com/dsanno/chainer-neural-style/blob/master/src/util.py#L99).
+   This section implements [Preserving Color in Neural Artistic Style Transfer](https://arxiv.org/abs/1606.05897). [Color Histogram Transfer algorithm](https://github.com/sunshineatnoon/Paper-Implementations/blob/master/NeuralSytleTransfer/util.py#L15) is copied from [chainer-neural-style](https://github.com/dsanno/chainer-neural-style/blob/master/src/util.py#L99).
    
    **Approach I: Color Histogram Matching**
 
