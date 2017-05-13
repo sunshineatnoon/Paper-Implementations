@@ -14,22 +14,23 @@ from PIL import Image
 import numpy as np
 import torchvision.models as models
 from vgg import VGG
-
+import util
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--cuda", action="store_true", help='enables cuda')
 parser.add_argument('--imageSize', type=int, default=512, help='the height / width of the input image to network')
-parser.add_argument('--style_image', default="images/picasso.jpg", help='path to style image')
-parser.add_argument('--content_image', default="images/dancing.jpg", help='path to style image')
-parser.add_argument('--niter', type=int, default=100, help='number of epochs to train for')
-parser.add_argument('--lr', type=float, default=1e1, help='learning rate, default=0.0002')
-parser.add_argument('--cuda', action='store_true', help='enables cuda')
-parser.add_argument('--outf', default='images/', help='folder to output images and model checkpoints')
-parser.add_argument('--manualSeed', type=int, help='manual seed')
-parser.add_argument('--content_weight', type=int, default=5e0, help='content loss weight')
-parser.add_argument('--style_weight', type=int, default=1e2, help='style loss weight')
-parser.add_argument('--content_layers', default='r42', help='layers for content')
-parser.add_argument('--style_layers', default='r11,r21,r31,r41,r51', help='layers for style')
-parser.add_argument('--vgg_dir', default='models/vgg_conv.pth', help='path to pretrained VGG19 net')
+parser.add_argument("--style_image", default="images/picasso.jpg", help='path to style image')
+parser.add_argument("--content_image", default="images/dancing.jpg", help='path to style image')
+parser.add_argument("--niter", type=int, default=100, help='number of epochs to train for')
+parser.add_argument("--lr", type=float, default=1e1, help='learning rate, default=0.0002')
+parser.add_argument("--outf", default="images/", help='folder to output images and model checkpoints')
+parser.add_argument("--manualSeed", type=int, help='manual seed')
+parser.add_argument("--content_weight", type=int, default=5e0, help='content loss weight')
+parser.add_argument("--style_weight", type=int, default=1e2, help='style loss weight')
+parser.add_argument("--content_layers", default="r42", help='layers for content')
+parser.add_argument("--style_layers", default="r11,r21,r31,r41,r51", help='layers for style')
+parser.add_argument("--vgg_dir", default="models/vgg_conv.pth", help='path to pretrained VGG19 net')
+parser.add_argument("--color_histogram_matching", action="store_true", help='using histogram matching to preserve color in content image')
 
 opt = parser.parse_args()
 # turn content layers and style layers to a list
@@ -60,11 +61,12 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.40760392, 0.45795686, 0.48501961],std=[1,1,1]), 
     transforms.Lambda(lambda x: x.mul_(255)),
     ])
-def load_image(path):
+def load_image(path,style=False):
     img = Image.open(path)
     img = Variable(transform(img))
     img = img.unsqueeze(0)
     return img
+
 def save_image(img):
     post = transforms.Compose([transforms.Lambda(lambda x: x.mul_(1./255)),
          transforms.Normalize(mean=[-0.40760392, -0.45795686, -0.48501961], std=[1,1,1]),
@@ -77,8 +79,19 @@ def save_image(img):
                 normalize=True)
     return 
 
-styleImg = load_image(opt.style_image) # 1x3x512x512
-contentImg = load_image(opt.content_image) # 1x3x512x512
+if(opt.color_histogram_matching):
+    styleImg = transform(util.open_and_resize_image(opt.style_image,256)) # 1x3x512x512
+    contentImg = transform(util.open_and_resize_image(opt.content_image,256)) # 1x3x512x512
+    styleImg = styleImg.unsqueeze(0)
+    contentImg = contentImg.unsqueeze(0)
+
+    styleImg = util.match_color_histogram(styleImg.numpy(),contentImg.numpy())
+    styleImg = Variable(torch.from_numpy(styleImg))
+    contentImg = Variable(contentImg)
+else:
+    styleImg = load_image(opt.style_image) # 1x3x512x512
+    contentImg = load_image(opt.content_image) # 1x3x512x512
+
 if(opt.cuda):
     styleImg = styleImg.cuda()
     contentImg = contentImg.cuda()

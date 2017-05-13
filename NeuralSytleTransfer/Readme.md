@@ -12,18 +12,28 @@
   wget -c --no-check-certificate https://bethgelab.org/media/uploads/pytorch_models/vgg_conv.pth
   cd ..
   ```
-## Training
+## Neural Style Transfer 
   ```
   python neuralStyle.py --cuda
   ```
+  <img src="images/dancing.jpg" height="200"> <img src="images/picasso.jpg" height="200"> <img src="images/transfer_dancing.png" height="200">
+
+  <img src="images/corgi.jpg" height="200"> <img src="images/candy.jpg" height="200"> <img src="images/transfer_corgi.png" height="200">
+## Neural Style Transfer with Color Preservation
+
+   This implements [Preserving Color in Neural Artistic Style Transfer](https://arxiv.org/abs/1606.05897). Color Histogram Transfer algorithm is copied from [chainer-neural-style](https://github.com/dsanno/chainer-neural-style).
+   
+   ```
+   python train.py --style_image images/picasso.jpg --content_image images/NY.png --content_weight 500 --style_weight 1 --cuda --color_histogram_matching
+   ```
+   <img src="images/NY.png" height="200"> <img src="images/picasso.jpg" height="200"> <img src="images/NY_transfer.png" height="200">
+
 **Train on CPU: leave out the `--cuda` parameter**
 
 Transferred image will be stored as `images/transfer.png`
 
-<img src="images/dancing.jpg" height="200"> <img src="images/picasso.jpg" height="200"> <img src="images/transfer_dancing.png" height="200">
-
-<img src="images/corgi.jpg" height="200"> <img src="images/candy.jpg" height="200"> <img src="images/transfer_corgi.png" height="200">
 
 ## Reference
 1. [https://github.com/yunjey/pytorch-tutorial](https://github.com/yunjey/pytorch-tutorial)
 2. [https://github.com/pytorch/examples](https://github.com/pytorch/examples)
+3. [https://github.com/dsanno/chainer-neural-style](https://github.com/dsanno/chainer-neural-style)
