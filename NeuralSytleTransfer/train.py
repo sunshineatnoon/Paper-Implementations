@@ -31,6 +31,7 @@ parser.add_argument("--content_layers", default="r42", help='layers for content'
 parser.add_argument("--style_layers", default="r11,r21,r31,r41,r51", help='layers for style')
 parser.add_argument("--vgg_dir", default="models/vgg_conv.pth", help='path to pretrained VGG19 net')
 parser.add_argument("--color_histogram_matching", action="store_true", help='using histogram matching to preserve color in content image')
+parser.add_argument("--luminance_only", action="store_true", help='perform neural style transfer only on luminance to preserve color in content image')
 
 opt = parser.parse_args()
 # turn content layers and style layers to a list
@@ -58,7 +59,7 @@ transform = transforms.Compose([
     transforms.Scale(opt.imageSize),
     transforms.ToTensor(),
     transforms.Lambda(lambda x: x[torch.LongTensor([2,1,0])]), #turn to BGR
-    transforms.Normalize(mean=[0.40760392, 0.45795686, 0.48501961],std=[1,1,1]), 
+    transforms.Normalize(mean=[0.40760392, 0.45795686, 0.48501961],std=[1,1,1]),
     transforms.Lambda(lambda x: x.mul_(255)),
     ])
 def load_image(path,style=False):
@@ -77,7 +78,7 @@ def save_image(img):
     vutils.save_image(img,
                 '%s/transfer.png' % (opt.outf),
                 normalize=True)
-    return 
+    return
 
 if(opt.color_histogram_matching):
     styleImg = transform(util.open_and_resize_image(opt.style_image,256)) # 1x3x512x512
@@ -88,6 +89,14 @@ if(opt.color_histogram_matching):
     styleImg = util.match_color_histogram(styleImg.numpy(),contentImg.numpy())
     styleImg = Variable(torch.from_numpy(styleImg))
     contentImg = Variable(contentImg)
+elif(opt.luminance_only):
+    styleImg = transform(util.open_and_resize_image(opt.style_image,256)) # 1x3x512x512
+    contentImg = transform(util.open_and_resize_image(opt.content_image,256)) # 1x3x512x512
+    styleImg = styleImg.unsqueeze(0)
+    contentImg = contentImg.unsqueeze(0)
+    styleImg,contentImg,content_iq = util.luminance_transfer(styleImg.numpy(),contentImg.numpy())
+    styleImg = Variable(torch.from_numpy(styleImg))
+    contentImg = Variable(torch.from_numpy(contentImg))
 else:
     styleImg = load_image(opt.style_image) # 1x3x512x512
     contentImg = load_image(opt.content_image) # 1x3x512x512
@@ -163,4 +172,8 @@ for iteration in range(1,opt.niter+1):
         print('loss: %f'%(totalLoss.data[0]))
         return totalLoss
     optimizer.step(closure)
-save_image(optImg.data[0].cpu().squeeze())
+outImg = optImg.data[0].cpu()
+if(opt.luminance_only):
+    outImg = util.join_yiq_to_bgr(outImg,content_iq)
+
+save_image(outImg.squeeze())
