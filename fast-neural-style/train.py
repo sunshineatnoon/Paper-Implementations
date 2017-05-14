@@ -33,6 +33,7 @@ parser.add_argument("--vgg_dir", default="models/vgg_conv.pth", help='path to pr
 parser.add_argument("--lr", type=float, default=1e-3, help='learning rate, default=0.0002')
 parser.add_argument("--content_weight", type=int, default=1, help='content loss weight')
 parser.add_argument("--style_weight", type=int, default=5, help='style loss weight')
+parser.add_argument("--save_image_every", type=int, default=5, help='save transferred image every this much times')
 opt = parser.parse_args()
 
 # turn content layers and style layers to a list
@@ -170,3 +171,9 @@ for iteration in range(1,opt.niter+1):
     totalLoss.backward()
     print('loss: %f'%(totalLoss.data[0]))
     optimizer.step()
+
+    # save transffered image
+    if(iteration % opt.save_image_every == 0):
+        vutils.save_image(optImg.data,
+            '%s/transffered.png' % (opt.outf),
+            normalize=True)
