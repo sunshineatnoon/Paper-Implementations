@@ -82,6 +82,8 @@ def load_image(path,style=False):
     return img
 
 styleImg = load_image(opt.style_image) # 1x3x512x512
+if(opt.cuda):
+    styleImg = styleImg.cuda()
 
 ###########   MODEL   ###########
 ## pre-trained VGG net
@@ -115,7 +117,9 @@ class styleLoss(nn.Module):
 styleTargets = []
 for t in vgg(styleImg,opt.style_layers):
     t = t.detach()
-    styleTargets.append(np.repeat(GramMatrix()(t),4,axis=0))
+    temp = GramMatrix()(t)
+    temp = temp.repeat(4,1,1,1)
+    styleTargets.append(temp)
 styleLosses = [styleLoss()] * len(opt.style_layers)
 contentLosses = [nn.MSELoss()] * len(opt.content_layers)
 losses = styleLosses + contentLosses
@@ -135,7 +139,6 @@ images = torch.FloatTensor(opt.batchSize, 3, opt.imageSize, opt.imageSize)
 images = Variable(images)
 if(opt.cuda):
     images = images.cuda()
-    styleImg = styleImg.cuda()
 
 ###########   Training   ###########
 for iteration in range(1,opt.niter+1):
