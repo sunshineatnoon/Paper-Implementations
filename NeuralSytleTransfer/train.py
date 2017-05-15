@@ -135,11 +135,11 @@ class BNMatching(nn.Module):
     def FeatureMean(self,input):
         b,c,h,w = input.size()
         f = input.view(b,c,h*w) # bxcx(hxw)
-        return torch.mean(f,dim=1)
+        return torch.mean(f,dim=2)
     def FeatureStd(self,input):
         b,c,h,w = input.size()
         f = input.view(b,c,h*w) # bxcx(hxw)
-        return torch.std(f, dim=1) 
+        return torch.std(f, dim=2)
     def forward(self,input,target):
         # input: 1 x c x H x W
         mu_input = self.FeatureMean(input)
