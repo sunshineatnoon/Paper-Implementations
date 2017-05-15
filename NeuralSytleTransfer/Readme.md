@@ -4,7 +4,6 @@
 
 - [Preserving Color in Neural Artistic Style Transfer](#neural-style-transfer-with-color-preservation)
 
-
 **This code heavily borrows from [https://github.com/leongatys/PytorchNeuralStyleTransfer](https://github.com/leongatys/PytorchNeuralStyleTransfer), which is an elegant example to show how to extract intermediate features from pre-trained models in PyTorch**
 
 ## Prerequisites
