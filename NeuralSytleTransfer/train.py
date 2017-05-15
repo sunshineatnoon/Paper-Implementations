@@ -133,21 +133,28 @@ class BNMatching(nn.Module):
     # of two feature maps between two images. Details can be found in
     # https://arxiv.org/abs/1701.01036
     def FeatureMean(self,input):
-        return torch.mean(torch.mean(input, dim=2, keepdim=True),dim=3,keepdim=True)
+        b,c,h,w = input.size()
+        f = input.view(b,c,h*w) # bxcx(hxw)
+        return torch.mean(f,dim=1)
     def FeatureStd(self,input):
-        return torch.std(torch.std(input, dim=2, keepdim=True), dim=3, keepdim=True)
+        b,c,h,w = input.size()
+        f = input.view(b,c,h*w) # bxcx(hxw)
+        return torch.std(f, dim=1) 
     def forward(self,input,target):
         # input: 1 x c x H x W
-        mu_input = FeatureMean(input)
-        mu_target = FeatureMean(target)
-        std_input = FeatureStd(input)
-        std_target = FeatureStd(target)
+        mu_input = self.FeatureMean(input)
+        mu_target = self.FeatureMean(target)
+        std_input = self.FeatureStd(input)
+        std_target = self.FeatureStd(target)
         return nn.MSELoss()(mu_input,mu_target) + nn.MSELoss()(std_input,std_target)
 
 styleTargets = []
 for t in vgg(styleImg,opt.style_layers):
     t = t.detach()
-    styleTargets.append(GramMatrix()(t))
+    if(opt.BNMatching):
+        styleTargets.append(t)
+    else:
+        styleTargets.append(GramMatrix()(t))
 contentTargets = []
 for t in vgg(contentImg,opt.content_layers):
     t = t.detach()
@@ -196,5 +203,6 @@ outImg = optImg.data[0].cpu()
 if(opt.luminance_only):
     outImg = np.expand_dims(outImg.numpy(),0)
     outImg = util.join_yiq_to_bgr(outImg,content_iq)
-
-save_image(torch.from_numpy(outImg).squeeze())
+    save_image(torch.from_numpy(outImg).squeeze())
+else:
+    save_image(outImg.squeeze())
