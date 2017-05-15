@@ -32,6 +32,7 @@ parser.add_argument("--style_layers", default="r11,r21,r31,r41,r51", help='layer
 parser.add_argument("--vgg_dir", default="models/vgg_conv.pth", help='path to pretrained VGG19 net')
 parser.add_argument("--color_histogram_matching", action="store_true", help='using histogram matching to preserve color in content image')
 parser.add_argument("--luminance_only", action="store_true", help='perform neural style transfer only on luminance to preserve color in content image')
+parser.add_argument("--BNMatching", action="store_true", help='use BN matching instead of Gram Matrix as style loss')
 
 opt = parser.parse_args()
 # turn content layers and style layers to a list
@@ -127,6 +128,22 @@ class styleLoss(nn.Module):
         GramInput = GramMatrix()(input)
         return nn.MSELoss()(GramInput,target)
 
+class BNMatching(nn.Module):
+    # A style loss by aligning the BN statistics (mean and standard deviation)
+    # of two feature maps between two images. Details can be found in
+    # https://arxiv.org/abs/1701.01036
+    def FeatureMean(self,input):
+        return torch.mean(torch.mean(input, dim=2, keepdim=True),dim=3,keepdim=True)
+    def FeatureStd(self,input):
+        return torch.std(torch.std(input, dim=2, keepdim=True), dim=3, keepdim=True)
+    def forward(self,input,target):
+        # input: 1 x c x H x W
+        mu_input = FeatureMean(input)
+        mu_target = FeatureMean(target)
+        std_input = FeatureStd(input)
+        std_target = FeatureStd(target)
+        return nn.MSELoss()(mu_input,mu_target) + nn.MSELoss()(std_input,std_target)
+
 styleTargets = []
 for t in vgg(styleImg,opt.style_layers):
     t = t.detach()
@@ -136,7 +153,10 @@ for t in vgg(contentImg,opt.content_layers):
     t = t.detach()
     contentTargets.append(t)
 
-styleLosses = [styleLoss()] * len(opt.style_layers)
+if(opt.BNMatching):
+    styleLosses = [BNMatching()] * len(opt.style_layers)
+else:
+    styleLosses = [styleLoss()] * len(opt.style_layers)
 contentLosses = [nn.MSELoss()] * len(opt.content_layers)
 
 # summary style and content loss so that we only need to go through the vgg once to get
