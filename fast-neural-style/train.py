@@ -23,7 +23,7 @@ parser.add_argument("--style_image", default="images/picasso.jpg", help='path to
 parser.add_argument("--outf", default="images/", help='folder to output images and model checkpoints')
 parser.add_argument("--dataPath", default="data/", help='folder to training image')
 parser.add_argument("--content_layers", default="r42", help='layers for content')
-parser.add_argument("--style_layers", default="r11,r21,r31,r41,r51", help='layers for style')
+parser.add_argument("--style_layers", default="r21,r31,r41,r51", help='layers for style')
 parser.add_argument("--batchSize", type=int,default=4, help='batch size')
 parser.add_argument("--niter", type=int,default=1, help='iterations to train the model')
 parser.add_argument('--manualSeed', type=int, help='manual seed')
@@ -119,7 +119,7 @@ styleTargets = []
 for t in vgg(styleImg,opt.style_layers):
     t = t.detach()
     temp = GramMatrix()(t)
-    temp = temp.repeat(4,1,1,1)
+    temp = temp.repeat(opt.batchSize,1,1,1)
     styleTargets.append(temp)
 styleLosses = [styleLoss()] * len(opt.style_layers)
 contentLosses = [nn.MSELoss()] * len(opt.content_layers)
@@ -161,13 +161,12 @@ for iteration in range(1,opt.niter+1):
     targets = styleTargets + contentTargets
 
     out = vgg(optImg, loss_layers)
-    totalLossList = []
+    totalLoss = 0
     for i in range(len(out)):
         layer_output = out[i]
         loss_i = losses[i]
         target_i = targets[i]
-        totalLossList.append(loss_i(layer_output,target_i) * weights[i])
-    totalLoss = sum(totalLossList)
+        totalLoss += loss_i(layer_output,target_i) * weights[i]
     totalLoss.backward()
     print('loss: %f'%(totalLoss.data[0]))
     optimizer.step()
