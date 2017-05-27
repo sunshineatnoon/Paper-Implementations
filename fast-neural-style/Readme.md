@@ -19,7 +19,7 @@ and Super-Resolution](http://cs.stanford.edu/people/jcjohns/papers/eccv16/Johnso
     ```
     python test.py --transform_net images/transform_net.pth --content_image images/corgi.jpg
     ```
-    <img src="images/candy.jpg" height="200"> <img src="images/corgi_candy.png" height="200"> <img src="images/dancing_candy.png" height="200">
+    <img src="images/candy.jpg" height="256"> <img src="images/corgi_candy.png" height="256"> <img src="images/dancing_candy.png" height="256">
 
 ## Training
    - Download [MS COCO Dataset](http://mscoco.org/dataset/#download)
