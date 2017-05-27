@@ -46,7 +46,7 @@ class TransformerNet(torch.nn.Module):
         y = self.relu(self.in4(self.deconv1(y)))
         y = self.relu(self.in5(self.deconv2(y)))
         y = self.deconv3(y)
-        return y
+        return y 
 
 
 class ConvLayer(torch.nn.Module):

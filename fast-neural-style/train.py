@@ -22,17 +22,17 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--style_image", default="images/picasso.jpg", help='path to style image')
 parser.add_argument("--outf", default="images/", help='folder to output images and model checkpoints')
 parser.add_argument("--dataPath", default="data/", help='folder to training image')
-parser.add_argument("--content_layers", default="r42", help='layers for content')
-parser.add_argument("--style_layers", default="r21,r31,r41,r51", help='layers for style')
+parser.add_argument("--content_layers", default="r33", help='layers for content')
+parser.add_argument("--style_layers", default="r12,r22,r33,r43", help='layers for style')
 parser.add_argument("--batchSize", type=int,default=4, help='batch size')
-parser.add_argument("--niter", type=int,default=1, help='iterations to train the model')
+parser.add_argument("--niter", type=int,default=40000, help='iterations to train the model')
 parser.add_argument('--manualSeed', type=int, help='manual seed')
 parser.add_argument('--cuda', action='store_true', help='enables cuda')
 parser.add_argument('--imageSize', type=int, default=256, help='image size')
 parser.add_argument("--vgg_dir", default="models/vgg_conv.pth", help='path to pretrained VGG19 net')
 parser.add_argument("--lr", type=float, default=1e-3, help='learning rate, default=0.0002')
-parser.add_argument("--content_weight", type=int, default=1, help='content loss weight')
-parser.add_argument("--style_weight", type=int, default=5, help='style loss weight')
+parser.add_argument("--content_weight", type=float, default=1.0, help='content loss weight')
+parser.add_argument("--style_weight", type=float, default=5.0, help='style loss weight')
 parser.add_argument("--save_image_every", type=int, default=5, help='save transferred image every this much times')
 opt = parser.parse_args()
 
@@ -63,8 +63,6 @@ transform = transforms.Compose([
     transforms.Scale(opt.imageSize),
     transforms.CenterCrop(opt.imageSize),
     transforms.ToTensor(),
-    transforms.Lambda(lambda x: x[torch.LongTensor([2,1,0])]), #turn to BGR
-    transforms.Normalize(mean=[0.40760392, 0.45795686, 0.48501961],std=[1,1,1]),
     transforms.Lambda(lambda x: x.mul_(255)),
     ])
 
@@ -108,7 +106,7 @@ class GramMatrix(nn.Module):
         # torch.bmm(batch1, batch2, out=None)   #
         # batch1: bxmxp, batch2: bxpxn -> bxmxn #
         G = torch.bmm(f,f.transpose(1,2)) # f: bxcx(hxw), f.transpose: bx(hxw)xc -> bxcxc
-        return G.div_(h*w)
+        return G.div_(c*h*w)
 
 class styleLoss(nn.Module):
     def forward(self,input,target):
@@ -149,6 +147,8 @@ for iteration in range(1,opt.niter+1):
     except StopIteration:
         loader = iter(train_loader)
         img,_ = loader.next()
+    if(img.size(0) < opt.batchSize):
+        continue
 
     images.data.resize_(img.size()).copy_(img)
 
@@ -173,6 +173,8 @@ for iteration in range(1,opt.niter+1):
 
     # save transffered image
     if(iteration % opt.save_image_every == 0):
+        optImg = optImg.clamp(0,255)
         vutils.save_image(optImg.data,
             '%s/transffered.png' % (opt.outf),
             normalize=True)
+torch.save(cnn.state_dict(), '%s/transform_net.pth' % (opt.outf))
